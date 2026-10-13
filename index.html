@@ -1,0 +1,1131 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SENYAS: FSL Practice App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1FA;--surface:#FFFFFF;--surface2:#E5EAF8;--ink:#171B3A;--muted:#596083;--line:#D2D9EE;
+  --primary:#2848F5;--onprimary:#FFFFFF;--primary-soft:#DCE3FF;--hero:#2848F5;
+  --sun:#FFC53D;--onsun:#3F2C00;--ok:#0E8F6E;--ok-bg:#D7F2E8;--bad:#C93038;--bad-bg:#FCE2E3;--warn-bg:#FFF0C7;
+  --fd:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --fb:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1125;--surface:#171B38;--surface2:#212650;--ink:#EDF0FF;--muted:#A0A8D2;--line:#2B3161;
+    --primary:#7189FF;--onprimary:#0E1125;--primary-soft:#232C6B;--hero:#3450F0;
+    --sun:#FFCB4D;--ok:#41D6AB;--ok-bg:#12382F;--bad:#FF8087;--bad-bg:#40202A;--warn-bg:#3D3315;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1125;--surface:#171B38;--surface2:#212650;--ink:#EDF0FF;--muted:#A0A8D2;--line:#2B3161;
+  --primary:#7189FF;--onprimary:#0E1125;--primary-soft:#232C6B;--hero:#3450F0;
+  --sun:#FFCB4D;--ok:#41D6AB;--ok-bg:#12382F;--bad:#FF8087;--bad-bg:#40202A;--warn-bg:#3D3315;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.ic{flex:none;vertical-align:middle}
+
+/* layout */
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+.rail{position:sticky;top:0;height:100vh;padding:22px 14px;display:flex;flex-direction:column;gap:6px;background:var(--surface);border-right:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 10px 18px}
+.brand .mark{width:38px;height:38px;border-radius:12px;background:var(--primary);color:var(--onprimary);display:grid;place-items:center}
+.brand b{font-family:var(--fd);font-weight:800;font-size:22px;letter-spacing:-.02em}
+.brand small{display:block;font-size:12px;color:var(--muted);margin-top:-3px}
+.navbtn{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border:0;border-radius:12px;background:none;font-weight:600;color:var(--muted);text-align:left}
+.navbtn:hover{background:var(--surface2);color:var(--ink)}
+.navbtn[aria-current="page"]{background:var(--primary-soft);color:var(--primary)}
+.rail .sp{flex:1}
+.seg{display:flex;background:var(--surface2);border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:8px 10px;font-weight:600;font-size:14px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
+.linkbtn{background:none;border:0;color:var(--muted);font-size:13px;text-decoration:underline;padding:8px 6px;text-align:left}
+main{padding:34px clamp(16px,4vw,52px) 60px;max-width:1160px;width:100%}
+.tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;padding:6px 2px;font-size:12px;font-weight:600;color:var(--muted);border-radius:10px}
+.tabbar button[aria-current="page"]{color:var(--primary)}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}.rail{display:none}.tabbar{display:flex}
+  main{padding-bottom:110px}
+}
+
+/* type + bits */
+.h1{font-family:var(--fd);font-weight:800;font-size:clamp(28px,4.2vw,42px);line-height:1.08;letter-spacing:-.025em}
+.h2{font-family:var(--fd);font-weight:800;font-size:22px;letter-spacing:-.015em}
+.h3{font-weight:700;font-size:17px}
+.muted{color:var(--muted)}
+.sub{color:var(--muted);margin-top:6px;max-width:60ch}
+.pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:12px 20px;font-weight:700;font-size:15px;background:var(--surface2);color:var(--ink);text-decoration:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--primary);color:var(--onprimary)}
+.btn.sun{background:var(--sun);color:var(--onsun)}
+.btn.ghost{background:none;border:1.5px solid var(--line)}
+.btn.sm{padding:8px 14px;font-size:14px;border-radius:12px}
+.btn.big{padding:17px 30px;font-size:18px;border-radius:20px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600;background:var(--surface2);color:var(--ink)}
+.chip.lv{background:var(--primary-soft);color:var(--primary)}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.chip.warn{background:var(--warn-bg);color:var(--ink)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;flex:1}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--primary)}
+.bar i.ok{background:var(--ok)}.bar i.bad{background:var(--bad)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:20px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+.stack{display:flex;flex-direction:column;gap:20px}
+.pill-stats{display:flex;gap:10px;flex-wrap:wrap}
+.pill-stats .chip{padding:8px 14px;font-size:15px;background:var(--surface);border:1px solid var(--line)}
+
+/* home */
+.continue{position:relative;overflow:hidden;background:var(--hero);color:#fff;border-radius:30px;padding:30px;min-height:250px;display:flex;flex-direction:column;justify-content:space-between;gap:24px}
+.continue .h2{font-size:30px}
+.continue p{color:rgba(255,255,255,.82);max-width:34ch;margin-top:6px}
+.continue .ghosthand{position:absolute;right:-10px;top:10px;width:46%;height:120%;opacity:.28;pointer-events:none}
+.ghosthand line,.ghosthand circle{stroke:#fff;fill:#fff}
+.ghosthand line{stroke-width:1.4;stroke-linecap:round}
+.dots{display:flex;gap:6px;margin-top:14px}
+.dots i{width:28px;height:6px;border-radius:9px;background:rgba(255,255,255,.35)}
+.dots i.on{background:#fff}
+.ladder{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column}
+.ladder li{position:relative;display:flex;gap:14px;padding:0 0 18px 0}
+.ladder li:last-child{padding-bottom:0}
+.ladder li::before{content:"";position:absolute;left:15px;top:32px;bottom:0;width:2px;background:var(--line)}
+.ladder li:last-child::before{display:none}
+.ladder .n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;background:var(--surface2);color:var(--muted);flex:none}
+.ladder .done .n{background:var(--ok);color:#fff}
+.ladder .cur .n{background:var(--primary);color:var(--onprimary);box-shadow:0 0 0 5px var(--primary-soft)}
+.ladder b{display:block;font-size:15px}.ladder span{font-size:13px;color:var(--muted)}
+.ladder .todo b{color:var(--muted)}
+.check{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.check:first-of-type{border-top:0}
+.check .box{width:24px;height:24px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:#fff}
+.check.done .box{background:var(--ok);border-color:var(--ok)}
+.check .grow{flex:1;min-width:0}
+.check small{color:var(--muted)}
+.reward{font-weight:700;color:var(--onsun);background:var(--sun);border-radius:99px;padding:2px 10px;font-size:13px}
+.review{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.review:first-of-type{border-top:0}
+
+/* scenarios path */
+.path{position:relative;display:flex;flex-direction:column;gap:18px}
+.stop{position:relative;display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px}
+.stop::before{content:"";position:absolute;left:21px;top:44px;bottom:-18px;width:2px;background:var(--line)}
+.stop:last-child::before{display:none}
+.node{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);color:var(--muted);z-index:1}
+.stop.done .node{background:var(--ok);color:#fff}
+.stop.cur .node{background:var(--primary);color:var(--onprimary);box-shadow:0 0 0 6px var(--primary-soft)}
+.scard{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px 22px;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}
+.stop.cur .scard{border:2px solid var(--primary)}
+.stop.lock .scard{background:transparent;border-style:dashed}
+.stop.lock h3{color:var(--muted)}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* learn */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filters button{border:1.5px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 16px;font-weight:600;font-size:14px}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.signs{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+.sign{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:0;overflow:hidden;display:flex;flex-direction:column}
+.sign:hover{border-color:var(--primary)}
+.sign .pic{height:104px;background:var(--surface2);display:grid;place-items:center;position:relative}
+.sign .pic svg{width:74px;height:74px}
+.sign .pic line,.sign .pic circle{stroke:var(--primary);fill:var(--primary)}
+.sign .pic line{stroke-width:1.6;stroke-linecap:round}
+.sign .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px}
+.sign .fil{font-family:var(--fd);font-weight:800;font-size:22px;letter-spacing:-.01em;line-height:1}
+.row{display:flex;align-items:center;gap:10px}
+.row small{font-weight:700;font-size:13px;min-width:38px;text-align:right}
+
+/* modal */
+.mback{position:fixed;inset:0;z-index:50;background:rgba(10,13,35,.6);display:grid;place-items:center;padding:16px;overflow:auto}
+.modal{background:var(--surface);border-radius:28px;width:min(560px,100%);padding:24px;max-height:calc(100vh - 32px);overflow:auto}
+.video{aspect-ratio:16/9;border-radius:18px;background:radial-gradient(100% 100% at 30% 10%,#2c3577,#12152f);display:grid;place-items:center;color:#fff;position:relative;margin-bottom:18px}
+.video .play{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center}
+.video small{position:absolute;bottom:10px;left:14px;opacity:.75;font-size:12px}
+.stars{display:flex;gap:6px;justify-content:center;color:var(--sun);margin:8px 0 4px}
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.stat{background:var(--surface2);border-radius:16px;padding:12px;text-align:center}
+.stat b{display:block;font-family:var(--fd);font-size:24px;font-weight:800;line-height:1.1}
+.stat span{font-size:13px;color:var(--muted)}
+.note{background:var(--primary-soft);border-radius:16px;padding:14px 16px;font-size:15px;display:flex;gap:12px}
+.note .ic{color:var(--primary);margin-top:2px}
+
+/* play */
+.crumb{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.playgrid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:900px){.playgrid{grid-template-columns:1fr}.playgrid .cam{order:-1}}
+.bubble{position:relative;background:var(--surface2);border-radius:20px 20px 20px 6px;padding:14px 18px;margin-top:4px}
+.bubble b{font-family:var(--fd);font-size:22px;font-weight:800;letter-spacing:-.01em}
+.npc{display:flex;gap:14px;align-items:flex-start}
+.avatar{width:48px;height:48px;border-radius:50%;background:var(--sun);color:var(--onsun);display:grid;place-items:center;font-family:var(--fd);font-weight:800;font-size:20px;flex:none}
+.objective{border-left:5px solid var(--primary);padding:4px 0 4px 16px}
+.objective .h2{margin-top:2px}
+.fb{border-radius:18px;padding:16px 18px;background:var(--surface2)}
+.fb.ok{background:var(--ok-bg)}.fb.bad{background:var(--bad-bg)}.fb.warn{background:var(--warn-bg)}
+.fb b.t{font-family:var(--fd);font-size:20px;font-weight:800;display:block;margin-bottom:4px}
+.fb .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.stage{position:relative;aspect-ratio:4/3;border-radius:30px;overflow:hidden;background:radial-gradient(120% 90% at 30% 8%,#2b3374 0%,#151936 58%,#0D1028 100%);color:#fff}
+.stage .bust{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
+.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.stage .corner{position:absolute;width:34px;height:34px;border:4px solid rgba(255,255,255,.75);border-radius:6px}
+.corner.a{top:14px;left:14px;border-right:0;border-bottom:0}.corner.b{top:14px;right:14px;border-left:0;border-bottom:0}
+.corner.c{bottom:14px;left:14px;border-right:0;border-top:0}.corner.d{bottom:14px;right:14px;border-left:0;border-top:0}
+svg.hand{position:absolute;left:22%;top:9%;width:56%;height:82%}
+svg.hand line{stroke:#7FE3FF;stroke-width:1.3;stroke-linecap:round}
+svg.hand circle{fill:#fff;stroke:#7FE3FF;stroke-width:.6}
+svg.hand{opacity:.55;transition:opacity .2s}
+.stage.rec svg.hand,.stage.res svg.hand{opacity:1}
+.stage.okc svg.hand line{stroke:#5BF0BF}.stage.okc svg.hand circle{stroke:#5BF0BF}
+.stage.badc svg.hand line{stroke:#FF8F94}.stage.badc svg.hand circle{stroke:#FF8F94}
+.stage.badc svg.hand{opacity:.8}
+.status{position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:rgba(10,12,32,.72);backdrop-filter:blur(6px);padding:7px 14px;border-radius:99px;font-weight:600;font-size:14px;white-space:nowrap}
+.status i{width:9px;height:9px;border-radius:50%;background:#5BF0BF}
+.status.rec i{background:#FF5B62;animation:blink .8s infinite}
+@keyframes blink{50%{opacity:.25}}
+.count{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--fd);font-weight:800;font-size:clamp(90px,16vw,150px);text-shadow:0 4px 30px rgba(0,0,0,.5)}
+.count span{animation:pop .65s ease-out}
+@keyframes pop{from{transform:scale(1.5);opacity:0}to{transform:scale(1);opacity:1}}
+.timer{position:absolute;left:24px;right:24px;bottom:24px;height:8px;background:rgba(255,255,255,.2);border-radius:9px;overflow:hidden}
+.timer i{display:block;height:100%;background:#FF5B62;animation:fill 1.3s linear forwards}
+@keyframes fill{from{width:0}to{width:100%}}
+.spin{position:absolute;bottom:26px;left:50%;width:26px;height:26px;margin-left:-13px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.controls{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:16px}
+.demo{margin-top:16px;background:var(--surface);border:1px dashed var(--line);border-radius:16px;padding:12px 14px}
+.demo p{font-size:13px;color:var(--muted);margin-bottom:8px}
+
+
+/* AR stage */
+.stage{aspect-ratio:16/10;touch-action:pan-y}
+@media (max-width:860px){.stage{aspect-ratio:4/3}}
+.stage .bust{opacity:.28}
+.stage .corner{display:none}
+#arc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+svg.hand{left:11%;top:29%;width:42%;height:56%}
+.zone{position:absolute;left:8%;top:27%;width:48%;height:62%;border:2px dashed rgba(127,227,255,.45);border-radius:26px;pointer-events:none}
+.zone span{position:absolute;top:-11px;left:18px;background:#131735;color:#7FE3FF;font-size:12px;font-weight:600;padding:1px 10px;border-radius:99px}
+.hud{position:absolute;top:14px;left:16px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;max-width:62%}
+.hrow{display:flex;gap:8px;flex-wrap:wrap}
+.chip-ar{display:inline-flex;align-items:center;gap:6px;background:rgba(10,12,32,.72);backdrop-filter:blur(6px);padding:6px 12px;border-radius:99px;font-weight:700;font-size:14px}
+.tag-ar{font-size:12px;color:#7FE3FF;background:rgba(10,12,32,.7);padding:2px 10px;border-radius:99px}
+.arbubble{position:absolute;left:0;top:0;max-width:40%;background:#fff;color:#171B3A;border-radius:16px 16px 16px 6px;padding:9px 14px;box-shadow:0 6px 24px rgba(0,0,0,.35);will-change:transform;opacity:0}
+.arbubble.on{opacity:1}
+.arbubble::after{content:"";position:absolute;left:calc(var(--tx,60px) - 8px);bottom:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0}
+.arbubble small{display:block;font-size:12px;color:#5B6182;font-weight:600}
+.arbubble b{font-family:var(--fd);font-weight:800;font-size:clamp(13px,1.5vw,17px);line-height:1.2}
+.objbar{position:absolute;left:14px;bottom:16px;max-width:52%;padding:8px 14px 9px;background:rgba(10,12,32,.78);backdrop-filter:blur(6px);border-radius:14px;display:flex;flex-direction:column;gap:1px}
+.objbar span{font-size:12px;opacity:.75}
+.objbar b{font-family:var(--fd);font-size:clamp(15px,2vw,20px);font-weight:800;line-height:1.2}
+.status{top:14px;bottom:auto;left:auto;right:16px;transform:none}
+.timer{left:0;right:0;bottom:0;height:6px;border-radius:0}
+.hint3d{position:absolute;right:16px;bottom:14px;font-size:12px;color:rgba(255,255,255,.7);background:rgba(10,12,32,.55);padding:3px 10px;border-radius:99px}
+@media (max-width:860px){.tag-ar,.stepc,.hint3d{display:none}.arbubble{max-width:52%;padding:7px 10px}.status{font-size:12px;padding:5px 10px}.objbar{max-width:60%}}
+
+/* town map */
+.town{width:100%;height:auto;display:block}
+.zn{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.zt{fill:var(--muted);font-size:12px;font-family:var(--fb)}
+.zh{fill:var(--ink);font-size:15px;font-weight:700;font-family:var(--fb)}
+.bld{cursor:pointer;outline:none}
+.bld circle.b{fill:var(--surface2);stroke:var(--line);stroke-width:2}
+.bld.done circle.b{fill:var(--ok-bg);stroke:var(--ok)}
+.bld.cur circle.b{fill:var(--primary-soft);stroke:var(--primary);stroke-width:3}
+.bld.lock{cursor:not-allowed}
+.bld.lock circle.b{fill:none;stroke-dasharray:5 4}
+.bld text{fill:var(--ink);font-family:var(--fb)}
+.bld .nm{font-weight:700;font-size:12.5px}
+.bld .st{font-size:11.5px;fill:var(--muted)}
+.bld .ico{color:var(--primary)}.bld.done .ico{color:var(--ok)}.bld.lock .ico{color:var(--muted)}
+.bld[role="button"]:hover circle.b,.bld[role="button"]:focus-visible circle.b{stroke:var(--primary);stroke-width:3}
+.pulse-ring{animation:ring 1.6s ease-out infinite;transform-box:fill-box;transform-origin:center;pointer-events:none}
+@keyframes ring{from{transform:scale(1);opacity:.7}to{transform:scale(1.5);opacity:0}}
+.lvhead{display:flex;align-items:baseline;gap:10px;margin:28px 0 12px;flex-wrap:wrap}
+.lvhead p{color:var(--muted);font-size:14px}
+
+/* progress */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+@media (max-width:760px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px}
+.tile b{display:block;font-family:var(--fd);font-size:32px;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+.tile span{font-size:14px;color:var(--muted)}
+.tile.hi{background:var(--primary);border-color:var(--primary);color:var(--onprimary)}
+.tile.hi span{color:inherit;opacity:.85}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:12px;font-family:var(--fb)}
+.mrow{display:grid;grid-template-columns:110px 1fr 44px;gap:12px;align-items:center;padding:7px 0;font-size:15px}
+.mrow small{font-weight:700;text-align:right}
+
+/* badges */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.badge{border-radius:22px;padding:20px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.badge .medal{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:var(--sun);color:var(--onsun)}
+.badge.off{background:transparent;border-style:dashed}
+.badge.off .medal{background:var(--surface2);color:var(--muted)}
+
+/* instructor */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:22px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th{text-align:left;font-size:14px;color:var(--muted);font-weight:600;padding:14px 16px;border-bottom:1px solid var(--line)}
+td{padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px}
+tr:last-child td{border-bottom:0}
+td .row{min-width:120px}
+tr.click{cursor:pointer}tr.click:hover td{background:var(--surface2)}
+
+#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;font-size:15px;z-index:80;max-width:calc(100vw - 32px);opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail" id="rail"></aside>
+  <main id="view" tabindex="-1"></main>
+</div>
+<nav class="tabbar" id="tabbar" aria-label="Main"></nav>
+<div id="modal-root"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+/* ---------- icons ---------- */
+const ICONS={
+ home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+ book:'<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H12v17H5.5A1.5 1.5 0 0 0 4 21.5z"/><path d="M20 4.5A1.5 1.5 0 0 0 18.5 3H12v17h6.5a1.5 1.5 0 0 1 1.5 1.5z"/>',
+ pin:'<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+ chart:'<path d="M4 20v-8M10 20V5M16 20v-11M21 20H3"/>',
+ trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4"/><path d="M12 13v4M8 21h8M10 17h4"/>',
+ lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+ star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+ flame:'<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 .3 1.5 1 2 2 2-.5-3 0-5 1-8z"/>',
+ camera:'<path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+ users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M17.5 14.5A5.5 5.5 0 0 1 22 20"/>',
+ bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
+ play:'<path d="M8 5l11 7-11 7z"/>',
+ arrowR:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+ arrowL:'<path d="M19 12H5M11 6l-6 6 6 6"/>',
+ hand:'<path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V11M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v7M17 10.5a1.5 1.5 0 0 1 3 0V15a7 7 0 0 1-7 7h-1a6 6 0 0 1-5-2.7L4 15a1.5 1.5 0 0 1 2.4-1.7L8 15"/>',
+ refresh:'<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>',
+ bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+ target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+ alert:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/>',
+ flask:'<path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7.5 15h9"/>',
+ flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+ board:'<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20l2-4M16 20l-2-4"/>',
+ cup:'<path d="M6 4h12l-1.5 16h-9z"/><path d="M6.5 9h11"/>',
+ cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h3l2.5 11h9.5l2-8H7"/>',
+ route:'<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/>',
+ bus:'<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 20v-3M16 20v-3"/>',
+ cal:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+ desk:'<rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 12h18M8 7V4h8v3"/>',
+ cross:'<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>',
+ compass:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'
+};
+const ic=(n,s=20,fill=false)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="${fill?'currentColor':'none'}" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+
+/* ---------- hand landmarks (21-point layout) ---------- */
+const LM=[[50,92],[36,82],[26,70],[20,58],[16,47],[38,58],[36,42],[35,30],[34,19],[49,54],[49,37],[49,25],[49,13],[60,57],[62,41],[63,30],[64,20],[70,64],[75,52],[78,43],[80,35]];
+const CONN=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+const TIPS=[4,8,12,16,20];
+const handStatic=(cls='')=>`<svg class="${cls}" viewBox="0 0 100 100" aria-hidden="true">${CONN.map(c=>`<line x1="${LM[c[0]][0]}" y1="${LM[c[0]][1]}" x2="${LM[c[1]][0]}" y2="${LM[c[1]][1]}"/>`).join('')}${LM.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${TIPS.includes(i)?2.6:1.8}"/>`).join('')}</svg>`;
+const handLive=()=>`<svg class="hand" id="hand" viewBox="0 0 100 100" aria-hidden="true">${CONN.map(c=>`<line data-a="${c[0]}" data-b="${c[1]}"/>`).join('')}${LM.map((p,i)=>`<circle data-i="${i}" r="${TIPS.includes(i)?2.4:1.7}"/>`).join('')}</svg>`;
+
+/* ---------- content ---------- */
+/* Glosses are Filipino words used as labels. FSL lecturers must validate every sign before use. */
+const SIGNS=[
+ {id:'kumusta',fil:'Kumusta',en:'Hello, how are you',cat:'Basic',m:92,att:14},
+ {id:'ako',fil:'Ako',en:'I, me',cat:'Basic',m:88,att:9},
+ {id:'salamat',fil:'Salamat',en:'Thank you',cat:'Basic',m:95,att:12},
+ {id:'pakiusap',fil:'Pakiusap',en:'Please',cat:'Basic',m:71,att:8},
+ {id:'oo',fil:'Oo',en:'Yes',cat:'Basic',m:97,att:6},
+ {id:'hindi',fil:'Hindi',en:'No',cat:'Basic',m:90,att:6},
+ {id:'pasensya',fil:'Pasensya',en:'Sorry',cat:'Basic',m:62,att:9},
+ {id:'ulit',fil:'Ulit',en:'Again, repeat',cat:'School',m:55,att:7},
+ {id:'tulong',fil:'Tulong',en:'Help',cat:'School',m:78,att:11},
+ {id:'guro',fil:'Guro',en:'Teacher',cat:'School',m:84,att:5},
+ {id:'pagkain',fil:'Pagkain',en:'Food',cat:'Everyday',m:0,att:0},
+ {id:'inumin',fil:'Inumin',en:'Drink',cat:'Everyday',m:0,att:0},
+ {id:'dalawa',fil:'Dalawa',en:'Two',cat:'Everyday',m:0,att:0},
+ {id:'bayad',fil:'Bayad',en:'Pay',cat:'Everyday',m:0,att:0},
+ {id:'magkano',fil:'Magkano',en:'How much',cat:'Everyday',m:0,att:0},
+ {id:'saan',fil:'Saan',en:'Where',cat:'Everyday',m:0,att:0},
+ {id:'diretso',fil:'Diretso',en:'Straight',cat:'Everyday',m:0,att:0},
+ {id:'kaliwa',fil:'Kaliwa',en:'Left',cat:'Everyday',m:0,att:0},
+ {id:'bukas',fil:'Bukas',en:'Tomorrow',cat:'Everyday',m:0,att:0},
+ {id:'oras',fil:'Oras',en:'Time',cat:'Everyday',m:0,att:0},
+ {id:'sakay',fil:'Sakay',en:'Ride',cat:'Public',m:0,att:0},
+ {id:'sasakyan',fil:'Sasakyan',en:'Vehicle',cat:'Public',m:0,att:0},
+ {id:'kailangan',fil:'Kailangan',en:'Need',cat:'Public',m:0,att:0},
+ {id:'sakit',fil:'Sakit',en:'Sick, hurt',cat:'Emergency',m:0,att:0},
+ {id:'doktor',fil:'Doktor',en:'Doctor',cat:'Emergency',m:0,att:0},
+ {id:'aksidente',fil:'Aksidente',en:'Accident',cat:'Emergency',m:0,att:0},
+ {id:'pulis',fil:'Pulis',en:'Police',cat:'Emergency',m:0,att:0},
+ {id:'nawawala',fil:'Nawawala',en:'Lost',cat:'Emergency',m:0,att:0}
+];
+const CATS=['All','Basic','School','Everyday','Public','Emergency'];
+const LEVELS=[
+ ['Basic communication','Greetings, introductions, and simple requests'],
+ ['School communication','Classroom, group work, laboratory, school events'],
+ ['Everyday communication','Restaurants, stores, transport, and directions'],
+ ['Public communication','Appointments, public services, and requesting help'],
+ ['Emergency communication','Urgent requests, accidents, and medical help']
+];
+const SCEN=[
+ {id:'gate',name:'First Day Hello',short:'Gate hello',lvl:1,scene:'gate',ic:'hand',reveal:true,desc:'Greet the school guard, introduce yourself, and ask politely to come in.',
+  steps:[{npc:'Guard Ramon',text:'Good morning!',tr:'The school guard waves as you arrive.',obj:'Greet the guard.',t:'kumusta'},
+         {npc:'Guard Ramon',text:'Who are you?',tr:'He asks you to introduce yourself.',obj:'Introduce yourself.',t:'ako'},
+         {npc:'Guard Ramon',text:'Do you need something?',tr:'You would like to go in.',obj:'Ask politely to come in.',t:'pakiusap'}]},
+ {id:'classroom',name:'Ask the Teacher to Repeat',short:'Ask to repeat',lvl:2,scene:'classroom',ic:'board',desc:'You missed the instruction. Ask your teacher to repeat it.',
+  steps:[{npc:'Ms. Reyes',text:'Open your books, then answer number 3.',tr:'Your teacher gives a quick instruction.',obj:'Ask your teacher to repeat it.',t:'ulit'},
+         {npc:'Ms. Reyes',text:'Open your books to page 10.',tr:'She repeats it slowly.',obj:'Show that you understand.',t:'oo'},
+         {npc:'Ms. Reyes',text:'Any other questions?',tr:'She waits for your reply.',obj:'Thank your teacher.',t:'salamat'}]},
+ {id:'group',name:'Group Activity',short:'Group work',lvl:2,scene:'group',ic:'users',desc:'Work with a groupmate and ask for support.',
+  steps:[{npc:'Jo',text:'Ready for our activity?',tr:'Your groupmate sits down beside you.',obj:'Greet your groupmate.',t:'kumusta'},
+         {npc:'Jo',text:'Hmm, I am stuck on this part.',tr:'Your groupmate needs assistance with the activity.',obj:'Ask for help.',t:'tulong'}]},
+ {id:'lab',name:'Laboratory Help',short:'Laboratory',lvl:2,scene:'lab',ic:'flask',desc:'Follow lab rules and ask for assistance.',
+  steps:[{npc:'Mr. Cruz',text:'Are you wearing your goggles?',tr:'Your lab teacher checks your gear.',obj:'Answer yes.',t:'oo'},
+         {npc:'Mr. Cruz',text:'How is your experiment?',tr:'Your beaker is stuck on the stand.',obj:'Ask for assistance.',t:'tulong'},
+         {npc:'Mr. Cruz',text:'There. It is loose now.',tr:'He frees it for you.',obj:'Thank him.',t:'salamat'}]},
+ {id:'event',name:'School Science Fair',short:'Science fair',lvl:2,scene:'event',ic:'flag',desc:'Welcome a visitor and find the right booth.',
+  steps:[{npc:'Visitor',text:'Hello! Is this the science fair?',tr:'A visiting parent arrives.',obj:'Greet the visitor.',t:'kumusta'},
+         {npc:'Visitor',text:'Where is the robotics booth?',tr:'She is looking for a booth.',obj:'Ask where it is.',t:'saan'},
+         {npc:'Visitor',text:'Found it. Enjoy the fair!',tr:'She thanks you for your time.',obj:'Say thank you.',t:'salamat'}]},
+ {id:'restaurant',name:'Order at a Fast Food Restaurant',short:'Fast food',lvl:3,scene:'restaurant',ic:'cup',desc:'Order a meal with a sequence of signs: food, quantity, drink, confirm.',
+  steps:[{npc:'Cashier',text:'Hi! What would you like?',tr:'The cashier is ready for your order.',obj:'Say you want food.',t:'pagkain'},
+         {npc:'Cashier',text:'How many?',tr:'She points at the menu.',obj:'Show the quantity: two.',t:'dalawa'},
+         {npc:'Cashier',text:'Anything to drink?',tr:'She holds up a cup.',obj:'Choose a drink.',t:'inumin'},
+         {npc:'Cashier',text:'Is that everything?',tr:'She reads the total back to you.',obj:'Confirm your order.',t:'oo'}]},
+ {id:'store',name:'Buy an Item at a Store',short:'Store',lvl:3,scene:'store',ic:'cart',desc:'Ask the price, decide, and pay.',
+  steps:[{npc:'Shopkeeper',text:'Looking for something?',tr:'You are holding a notebook.',obj:'Ask how much it costs.',t:'magkano'},
+         {npc:'Shopkeeper',text:'That one is 250 pesos.',tr:'He shows the price tag.',obj:'Say yes, you will buy it.',t:'oo'},
+         {npc:'Shopkeeper',text:'Cash or card?',tr:'He opens the register.',obj:'Say you will pay.',t:'bayad'},
+         {npc:'Shopkeeper',text:'Here is your receipt.',tr:'He hands over the bag.',obj:'Thank the shopkeeper.',t:'salamat'}]},
+ {id:'street',name:'Ask for Directions',short:'Directions',lvl:3,scene:'street',ic:'route',desc:'Ask where a place is and follow the directions.',
+  steps:[{npc:'Passerby',text:'Hi, can I help you?',tr:'You are looking for the terminal.',obj:'Ask where the terminal is.',t:'saan'},
+         {npc:'Passerby',text:'Go straight first.',tr:'She points down the road.',obj:'Show the first direction.',t:'diretso'},
+         {npc:'Passerby',text:'Then turn at the corner.',tr:'She points to the other side.',obj:'Show the second direction.',t:'kaliwa'},
+         {npc:'Passerby',text:'You are welcome!',tr:'She smiles and waves.',obj:'Say thank you.',t:'salamat'}]},
+ {id:'busstop',name:'Ask About Transportation',short:'Transport',lvl:3,scene:'busstop',ic:'bus',desc:'Find out which vehicle to take.',
+  steps:[{npc:'Conductor',text:'Can I help you?',tr:'A bus is waiting at the stop.',obj:'Say you want to ride.',t:'sakay'},
+         {npc:'Conductor',text:'Which one do you need?',tr:'Two vehicles are parked nearby.',obj:'Ask about the vehicle.',t:'sasakyan'},
+         {npc:'Conductor',text:'This one leaves in 5 minutes.',tr:'He points to the bus.',obj:'Thank the conductor.',t:'salamat'}]},
+ {id:'clinic',name:'Make an Appointment',short:'Appointment',lvl:4,scene:'clinic',ic:'cal',desc:'Book a check-up at a clinic desk.',
+  steps:[{npc:'Receptionist',text:'Good day! How can I help?',tr:'You are at the front desk.',obj:'Greet the receptionist.',t:'kumusta'},
+         {npc:'Receptionist',text:'Which day works for you?',tr:'She opens the calendar.',obj:'Choose tomorrow.',t:'bukas'},
+         {npc:'Receptionist',text:'And what time?',tr:'She shows the open slots.',obj:'Ask about the time.',t:'oras'}]},
+ {id:'info',name:'Get Help in a Public Place',short:'Public place',lvl:4,scene:'info',label:'INFO',ic:'info',desc:'Ask staff at an information desk for assistance.',
+  steps:[{npc:'Mall Staff',text:'Welcome to the mall!',tr:'You approach the information desk.',obj:'Greet the staff.',t:'kumusta'},
+         {npc:'Mall Staff',text:'How can I help you?',tr:'She leans in to listen.',obj:'Say you need help.',t:'tulong'},
+         {npc:'Mall Staff',text:'I will call someone for you.',tr:'She picks up the phone.',obj:'Say thank you.',t:'salamat'}]},
+ {id:'service',name:'Public Service Counter',short:'Service desk',lvl:4,scene:'service',ic:'desk',desc:'Communicate with staff at a government service window.',
+  steps:[{npc:'Clerk',text:'Next, please!',tr:'It is your turn at the window.',obj:'Greet the clerk.',t:'kumusta'},
+         {npc:'Clerk',text:'What do you need today?',tr:'She slides a form forward.',obj:'Say what you need.',t:'kailangan'},
+         {npc:'Clerk',text:'One moment, please.',tr:'She looks for the right form.',obj:'Ask politely.',t:'pakiusap'}]},
+ {id:'medical',name:'Ask for Medical Help',short:'Medical help',lvl:5,scene:'medical',ic:'cross',desc:'Tell a nurse you are hurt and ask for a doctor.',
+  steps:[{npc:'Nurse',text:'What is wrong?',tr:'You arrive at the clinic in pain.',obj:'Say you are sick or hurt.',t:'sakit'},
+         {npc:'Nurse',text:'Do you need a doctor?',tr:'She checks on you.',obj:'Ask for a doctor.',t:'doktor'},
+         {npc:'Nurse',text:'Is it urgent?',tr:'She reaches for the phone.',obj:'Confirm it is urgent.',t:'oo'}]},
+ {id:'accident',name:'Report an Accident',short:'Accident',lvl:5,scene:'accident',ic:'alert',desc:'Report a crash and ask for the right help.',
+  steps:[{npc:'Officer',text:'What happened here?',tr:'Two cars have collided.',obj:'Report the accident.',t:'aksidente'},
+         {npc:'Officer',text:'Should I call the police?',tr:'He takes out his radio.',obj:'Ask for the police.',t:'pulis'},
+         {npc:'Officer',text:'Is anyone hurt?',tr:'A driver sits by the road.',obj:'Ask for a doctor.',t:'doktor'}]},
+ {id:'lost',name:'Ask for Help When Lost',short:'Lost',lvl:5,scene:'lost',ic:'compass',desc:'Tell a guard you are lost and find the exit.',
+  steps:[{npc:'Guard',text:'You look worried.',tr:'You are alone in a big mall.',obj:'Say you are lost.',t:'nawawala'},
+         {npc:'Guard',text:'Where do you need to go?',tr:'He points to the map.',obj:'Ask where the exit is.',t:'saan'},
+         {npc:'Guard',text:'It is down this hall.',tr:'He walks you to the corner.',obj:'Say thank you.',t:'salamat'}]},
+ {id:'urgent',name:'Communicate an Urgent Need',short:'Urgent need',lvl:5,scene:'info',label:'HELP',ic:'bolt',desc:'Explain something urgent and confirm you need help now.',
+  steps:[{npc:'Staff',text:'You seem upset. What is urgent?',tr:'Staff notice you rushing in.',obj:'Say you need something.',t:'kailangan'},
+         {npc:'Staff',text:'Do you need help right now?',tr:'She steps out from the desk.',obj:'Say yes.',t:'oo'},
+         {npc:'Staff',text:'Stay here. Help is coming.',tr:'She calls for support.',obj:'Say thank you.',t:'salamat'}]}
+];
+const BADGES=[
+ {n:'First sign',d:'Complete your first practice.',ic:'hand',on:true},
+ {n:'Warm hello',d:'Greet in 3 scenarios.',ic:'users',on:true},
+ {n:'Steady hands',d:'5 correct signs without a retry.',ic:'target',on:true},
+ {n:'Seven-day streak',d:'Practice 7 days in a row.',ic:'flame',p:[6,7]},
+ {n:'Quick signer',d:'Answer 3 steps in under 3 seconds.',ic:'bolt',p:[1,3]},
+ {n:'Order up',d:'Finish the fast food order.',ic:'cup',p:[0,1]},
+ {n:'Never lost',d:'Finish Ask for Help When Lost.',ic:'compass',p:[0,1]},
+ {n:'First responder',d:'Finish all Level 5 scenarios.',ic:'alert',p:[0,4]}
+];
+const CLASS=[
+ ['Maria Santos',2,87,4.2,1,'Today'],['Paolo Reyes',3,92,3.6,6,'Today'],['Ana Lim',2,64,7.9,2,'Yesterday'],
+ ['Jomar Dela Cruz',2,81,5.0,3,'Today'],['Bea Villanueva',5,95,3.1,13,'Today'],['Carlo Ramos',1,58,9.1,0,'5 days ago'],
+ ['Ivy Tan',3,78,5.8,5,'2 days ago'],['Nico Aquino',2,71,6.4,2,'Yesterday']
+];
+const PROG=[72,75,70,81,84,79,88,86,91,89];
+const REPLY={kumusta:'Kumusta! Good to see you.',ako:'Nice to meet you!',salamat:"You're welcome!",pakiusap:'Of course. Come in.',oo:'Great, got it.',hindi:'Okay, no problem.',pasensya:"It's okay.",ulit:'Sure, let me say it again.',tulong:"Of course, I'll help.",guro:"Thanks, I'll ask her.",pagkain:'One order coming up.',inumin:'A drink, got it.',dalawa:'Two. Noted!',bayad:'Great, here is the total.',magkano:"It's 250 pesos.",saan:'Right this way.',diretso:'Yes, straight ahead.',kaliwa:'Yes, then turn there.',bukas:'Tomorrow works.',oras:'How about 10 AM?',sakay:'Sure, hop on.',sasakyan:'The next one leaves soon.',kailangan:'I see. Let me help.',sakit:"I'm sorry. I'll get help.",doktor:'Calling the doctor now.',aksidente:'Thank you for telling me.',pulis:'Calling the police.',nawawala:"Don't worry, I'll help you."};
+
+/* ---------- state ---------- */
+const S={role:'learner',view:'home',filter:'All',viewing:null,points:1240,streak:6,done:{gate:true},stars:{gate:3},resume:{classroom:1},unlockAll:false};
+let P=null,CAM=null,HAND_T=null;
+const $=s=>document.querySelector(s);
+const unlocked=i=>S.unlockAll||i===0||!!S.done[SCEN[i-1].id];
+const sg=id=>SIGNS.find(s=>s.id===id);
+const barc=m=>m>=80?'ok':m<60?'bad':'';
+const isCur=(s,i)=>unlocked(i)&&!S.done[s.id]&&(S.resume[s.id]||i===SCEN.findIndex(x=>!S.done[x.id]));
+const doneCount=()=>SCEN.filter(s=>S.done[s.id]).length;
+
+/* ---------- navigation ---------- */
+const NAV_L=[['home','Home','home'],['learn','Learn','book'],['scenarios','Map','pin'],['progress','Progress','chart'],['badges','Badges','trophy']];
+const NAV_I=[['class','Class overview','users']];
+function renderNav(){
+  const items=S.role==='learner'?NAV_L:NAV_I;
+  const cur=S.view==='play'?'scenarios':S.view;
+  $('#rail').innerHTML=`
+   <div class="brand"><div class="mark">${ic('hand',22)}</div><div><b>Senyas</b><small>FSL practice</small></div></div>
+   ${items.map(([v,l,i])=>`<button class="navbtn" data-a="go" data-v="${v}" ${cur===v?'aria-current="page"':''}>${ic(i)}${l}</button>`).join('')}
+   <div class="sp"></div>
+   <div class="seg" role="group" aria-label="Switch role">
+     <button data-a="role" data-r="learner" aria-pressed="${S.role==='learner'}">Learner</button>
+     <button data-a="role" data-r="instructor" aria-pressed="${S.role==='instructor'}">Instructor</button>
+   </div>
+   <button class="linkbtn" data-a="unlock">${S.unlockAll?'Relock scenarios':'Unlock all scenarios (prototype)'}</button>`;
+  $('#tabbar').innerHTML=items.map(([v,l,i])=>`<button data-a="go" data-v="${v}" ${cur===v?'aria-current="page"':''}>${ic(i,22)}${l}</button>`).join('')+(S.role==='learner'?'':`<button data-a="role" data-r="learner">${ic('arrowL',22)}Learner</button>`);
+}
+function go(v,viewing){S.view=v;if(viewing!==undefined)S.viewing=viewing;render();window.scrollTo(0,0);}
+function render(){
+  clearInterval(HAND_T);
+  if(S.view!=='play')AR.c=null;
+  renderNav();
+  const fn={home:homeV,learn:learnV,scenarios:scenV,progress:progV,badges:badgeV,class:classV,play:playV}[S.view];
+  $('#view').innerHTML=fn();
+  if(S.view==='play')afterPlay();
+}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2600);}
+
+/* ---------- views ---------- */
+function homeV(){
+  const g=SCEN.find(s=>s.id==='classroom'),rs=S.resume.classroom||0;
+  const weak=[...SIGNS].filter(s=>s.m>0).sort((a,b)=>a.m-b.m).slice(0,3);
+  return `
+  <div class="pagehead">
+    <div><h1 class="h1">Kumusta, Maria.</h1><p class="sub">You are on Level 2. Finish this mission to keep your streak going.</p></div>
+    <div class="pill-stats"><span class="chip">${ic('star',18,true)} ${S.points.toLocaleString()} points</span><span class="chip">${ic('flame',18)} ${S.streak} day streak</span></div>
+  </div>
+  <div class="grid2">
+    <div class="stack">
+      <section class="continue" aria-label="Continue your mission">
+        ${handStatic('ghosthand')}
+        <div style="position:relative">
+          <span class="chip" style="background:rgba(255,255,255,.2);color:#fff">Level 2: School communication</span>
+          <h2 class="h2" style="margin-top:14px">${g.name}</h2>
+          <p>Your teacher repeated the instruction slowly. Show that you understand.</p>
+          <div class="dots">${g.steps.map((_,i)=>`<i class="${i<rs?'on':''}"></i>`).join('')}</div>
+        </div>
+        <div style="position:relative"><button class="btn sun big" data-a="open" data-id="classroom">${ic('camera',22)} Continue mission</button></div>
+      </section>
+      <section class="panel">
+        <div class="pagehead" style="margin-bottom:6px"><h2 class="h2">Today's missions</h2><span class="muted">1 of 3 done</span></div>
+        <div class="check done"><div class="box">${ic('check',16)}</div><div class="grow"><b>Score 90% on any scenario</b><br><small>First Day Hello, 94%</small></div><span class="reward">+40</span></div>
+        <div class="check"><div class="box"></div><div class="grow"><b>Finish Ask the Teacher to Repeat</b><br><small>1 of 3 steps</small></div><span class="reward">+100</span></div>
+        <div class="check"><div class="box"></div><div class="grow"><b>Practice Ulit 3 times</b><br><small>1 of 3 tries</small></div><span class="reward">+30</span></div>
+      </section>
+    </div>
+    <div class="stack">
+      <section class="panel">
+        <h2 class="h2">Your difficulty path</h2>
+        <p class="muted" style="font-size:14px;margin-top:4px">Senyas raises the challenge when your accuracy and speed stay strong.</p>
+        <ol class="ladder">
+          ${LEVELS.map((l,i)=>`<li class="${i<1?'done':i===1?'cur':'todo'}"><span class="n">${i<1?ic('check',16):i+1}</span><div><b>${l[0]}</b><span>${l[1]}</span></div></li>`).join('')}
+        </ol>
+      </section>
+      <section class="panel">
+        <h2 class="h2">Signs to review</h2>
+        ${weak.map(s=>`<div class="review"><div style="flex:1"><b>${s.fil}</b><br><small class="muted">${s.en}, ${s.m}% mastery</small></div><button class="btn sm" data-a="practice" data-id="${s.id}">Practice</button></div>`).join('')}
+      </section>
+    </div>
+  </div>`;
+}
+
+function learnV(){
+  const list=SIGNS.filter(s=>S.filter==='All'||s.cat===S.filter);
+  return `
+  <div class="pagehead"><div><h1 class="h1">Learn signs</h1><p class="sub">Watch your lecturer's demonstration, then practice each sign on camera before using it in a scenario.</p></div></div>
+  <div class="filters" role="group" aria-label="Filter by category">${CATS.map(c=>`<button data-a="filter" data-c="${c}" aria-pressed="${S.filter===c}">${c}</button>`).join('')}</div>
+  <div class="signs">${list.map(s=>`
+    <button class="sign" data-a="sign" data-id="${s.id}" aria-label="Open ${s.fil}, ${s.en}">
+      <div class="pic">${handStatic()}</div>
+      <div class="body"><span class="fil">${s.fil}</span><span class="muted" style="font-size:14px">${s.en}</span>
+      ${s.m?`<div class="row"><div class="bar"><i class="${barc(s.m)}" style="width:${s.m}%"></i></div><small>${s.m}%</small></div>`:`<span class="chip" style="align-self:flex-start">Not started</span>`}</div>
+    </button>`).join('')}</div>`;
+}
+
+const ZONES=[{lvl:1,x:20,y:20,w:230,h:150},{lvl:2,x:270,y:20,w:430,h:150},{lvl:3,x:20,y:190,w:360,h:150},{lvl:4,x:400,y:190,w:300,h:150},{lvl:5,x:20,y:360,w:680,h:150}];
+function townMap(){
+  const zs=ZONES.map(z=>{
+    const list=SCEN.map((s,i)=>({s,i})).filter(o=>o.s.lvl===z.lvl);
+    const pins=list.map((o,k)=>{
+      const {s,i}=o,open=unlocked(i),done=!!S.done[s.id],cur=isCur(s,i);
+      const cls=done?'done':cur?'cur':open?'':'lock';
+      const st=done?'Completed':cur?(S.resume[s.id]?'Continue':'Up next'):open?'Ready':'Locked';
+      const cx=z.x+z.w*(k+.5)/list.length,cy=z.y+84;
+      const act=open?`data-a="open" data-id="${s.id}" role="button" tabindex="0"`:'aria-disabled="true"';
+      return `<g class="bld ${cls}" ${act} aria-label="${s.name}, ${st}">
+        ${cur?`<circle class="pulse-ring" cx="${cx}" cy="${cy}" r="26" fill="none" stroke="var(--primary)" stroke-width="3"/>`:''}
+        <circle class="b" cx="${cx}" cy="${cy}" r="26"/>
+        <g class="ico" transform="translate(${cx-12},${cy-12})" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONS[open?s.ic:'lock']}</g>
+        <text class="nm" x="${cx}" y="${cy+46}" text-anchor="middle">${s.short}</text>
+        <text class="st" x="${cx}" y="${cy+62}" text-anchor="middle">${st}</text></g>`;
+    }).join('');
+    return `<rect class="zn" x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" rx="22"/>
+      <text class="zt" x="${z.x+20}" y="${z.y+27}">Level ${z.lvl}</text><text class="zh" x="${z.x+20}" y="${z.y+46}">${LEVELS[z.lvl-1][0]}</text>${pins}`;
+  }).join('');
+  return `<svg class="town" viewBox="0 0 720 530" role="group" aria-label="Map of 16 places grouped by level">${zs}</svg>`;
+}
+function scenV(){
+  return `
+  <div class="pagehead"><div><h1 class="h1">Choose a place</h1><p class="sub">Each place is an AR scene. Senyas puts the room and the people in front of your camera, then gives you a goal to sign.</p></div></div>
+  <div style="background:var(--surface2);border-radius:26px;padding:12px">${townMap()}</div>
+  ${LEVELS.map((lv,li)=>`
+   <div class="lvhead"><h2 class="h2">Level ${li+1}: ${lv[0]}</h2></div>
+   <div class="stack" style="gap:12px">${SCEN.map((s,i)=>({s,i})).filter(o=>o.s.lvl===li+1).map(({s,i})=>{
+     const open=unlocked(i),done=!!S.done[s.id],cur=isCur(s,i);
+     const used=[...new Set(s.steps.map(x=>sg(x.t).fil))];
+     return `<div class="scard" style="${cur?'border:2px solid var(--primary)':''}${open?'':';border-style:dashed;background:transparent'}">
+       <div style="min-width:0;flex:1 1 280px"><h3 class="h3" ${open?'':'style="color:var(--muted)"'}>${s.name}</h3><p class="muted" style="font-size:15px">${s.desc}</p>
+       <div class="meta">${s.steps.length>2?`<span class="chip warn">${s.steps.length}-sign sequence</span>`:''}${used.map(u=>`<span class="chip">${u}</span>`).join('')}${done?`<span class="chip ok">${'★'.repeat(S.stars[s.id]||1)} Completed</span>`:''}</div></div>
+       ${open?`<button class="btn ${done?'':'primary'}" data-a="open" data-id="${s.id}">${done?'Replay':S.resume[s.id]?'Continue':'Start'}</button>`:`<span class="muted" style="font-size:14px">Finish ${SCEN[i-1].name} to unlock</span>`}</div>`}).join('')}</div>`).join('')}`;
+}
+
+function progV(){
+  const name=S.viewing||'Maria',inst=S.role==='instructor';
+  const W=600,x=i=>30+i*(540/9),y=v=>190-(v-50)*3.2;
+  const pts=PROG.map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+  const area=`30,190 ${pts} ${x(9)},190`;
+  const grid=[50,75,100].map(v=>`<line x1="30" x2="570" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="0" y="${y(v)+4}">${v}%</text>`).join('');
+  const rec=[...SIGNS].filter(s=>s.m>0).sort((a,b)=>a.m-b.m).slice(0,3);
+  return `
+  ${inst?`<button class="btn ghost sm" data-a="go" data-v="class" style="margin-bottom:16px">${ic('arrowL',16)} Back to class</button>`:''}
+  <div class="pagehead"><div><h1 class="h1">${inst?name+"'s progress":'Your progress'}</h1><p class="sub">${inst?'Performance history recorded across all attempts.':'See what is improving and what needs more practice.'}</p></div>
+    ${inst?`<button class="btn" data-a="toast" data-t="Prototype: report export is not connected.">Export report</button>`:''}</div>
+  <div class="tiles">
+    <div class="tile hi"><b>87%</b><span>Average accuracy</span></div>
+    <div class="tile"><b>4.2s</b><span>Average response time</span></div>
+    <div class="tile"><b>1.6</b><span>Attempts per step</span></div>
+    <div class="tile"><b>${doneCount()} of ${SCEN.length}</b><span>Scenarios completed</span></div>
+  </div>
+  <div class="grid2">
+    <section class="panel"><h2 class="h2">Accuracy over the last 10 sessions</h2>
+      <svg class="chart" viewBox="0 0 ${W} 220" role="img" aria-label="Accuracy rose from 72 percent to 89 percent over 10 sessions" style="margin-top:14px">
+        ${grid}<polygon points="${area}" fill="var(--primary)" opacity=".12"/>
+        <polyline points="${pts}" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+        ${PROG.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="4.5" fill="var(--surface)" stroke="var(--primary)" stroke-width="2.5"/>`).join('')}
+        ${PROG.map((v,i)=>`<text x="${x(i)}" y="212" text-anchor="middle">${i+1}</text>`).join('')}
+      </svg></section>
+    <section class="panel"><h2 class="h2">${inst?'Suggested support':'Recommended practice'}</h2>
+      <div style="margin-top:8px">${rec.map(s=>`<div class="review"><div style="flex:1"><b>${s.fil}</b><br><small class="muted">${s.m}% mastery over ${s.att} attempts</small></div>${inst?`<span class="chip ${s.m<60?'bad':'warn'}">${s.m<60?'Needs help':'Watch'}</span>`:`<button class="btn sm" data-a="practice" data-id="${s.id}">Practice</button>`}</div>`).join('')}</div>
+    </section>
+  </div>
+  <section class="panel" style="margin-top:20px"><h2 class="h2">Mastery by sign</h2>
+    <div style="margin-top:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));column-gap:36px">
+    ${SIGNS.filter(s=>s.m>0).map(s=>`<div class="mrow"><span>${s.fil}</span><div class="bar"><i class="${barc(s.m)}" style="width:${s.m}%"></i></div><small>${s.m}%</small></div>`).join('')}</div></section>`;
+}
+
+function badgeV(){
+  return `<div class="pagehead"><div><h1 class="h1">Badges</h1><p class="sub">3 of 8 earned. Badges reward steady practice, not only perfect runs.</p></div></div>
+  <div class="badges">${BADGES.map(b=>`<div class="badge ${b.on?'':'off'}"><div class="medal">${ic(b.ic,28)}</div><div><b>${b.n}</b><p class="muted" style="font-size:14px">${b.d}</p></div>
+   ${b.on?`<span class="chip ok" style="align-self:flex-start">Earned</span>`:`<div class="row"><div class="bar"><i style="width:${b.p[0]/b.p[1]*100}%"></i></div><small>${b.p[0]}/${b.p[1]}</small></div>`}</div>`).join('')}</div>`;
+}
+
+function classV(){
+  const hard=[['Nawawala',41],['Aksidente',46],['Ulit',58],['Pasensya',61]];
+  return `
+  <div class="pagehead"><div><h1 class="h1">Class overview</h1><p class="sub">FSL 101, Section A. Data updates as learners practice.</p></div><button class="btn" data-a="toast" data-t="Prototype: report export is not connected.">Export report</button></div>
+  <div class="tiles">
+    <div class="tile hi"><b>8</b><span>Learners enrolled</span></div><div class="tile"><b>78%</b><span>Class accuracy</span></div>
+    <div class="tile"><b>5 of 8</b><span>Practiced this week</span></div><div class="tile"><b>2</b><span>Need attention</span></div>
+  </div>
+  <div class="grid2">
+    <div class="tablewrap"><table><thead><tr><th>Learner</th><th>Level</th><th>Accuracy</th><th>Response</th><th>Scenarios</th><th>Last active</th></tr></thead><tbody>
+    ${CLASS.map(r=>`<tr class="click" tabindex="0" data-a="viewLearner" data-n="${r[0]}"><td><b>${r[0]}</b>${r[2]<65?` <span class="chip bad" style="margin-left:6px">Needs attention</span>`:''}</td><td>${r[1]}</td>
+      <td><div class="row"><div class="bar"><i class="${barc(r[2])}" style="width:${r[2]}%"></i></div><small>${r[2]}%</small></div></td><td>${r[3]}s</td><td>${r[4]} of 16</td><td class="muted">${r[5]}</td></tr>`).join('')}
+    </tbody></table></div>
+    <section class="panel"><h2 class="h2">Signs the class finds hardest</h2><p class="muted" style="font-size:14px;margin-top:4px">Lowest average accuracy across all learners.</p>
+      <div style="margin-top:10px">${hard.map(h=>`<div class="mrow" style="grid-template-columns:90px 1fr 44px"><span>${h[0]}</span><div class="bar"><i class="${barc(h[1])}" style="width:${h[1]}%"></i></div><small>${h[1]}%</small></div>`).join('')}</div>
+      <div class="note" style="margin-top:16px">${ic('bulb',22)}<span>Consider reviewing Nawawala and Aksidente before the next emergency scenario.</span></div></section>
+  </div>`;
+}
+
+/* ---------- mini AR engine: real perspective 3D on a canvas, no libraries ---------- */
+const rgb=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const shade=(c,f)=>`rgb(${Math.min(255,c[0]*f|0)},${Math.min(255,c[1]*f|0)},${Math.min(255,c[2]*f|0)})`;
+const WOOD='#D9A45B',WOOD2='#B47A3C',WH='#F4F7FF',GR='#8C96B8',DK='#2C3466',RED='#FF6B6B',YEL='#FFD54F',TEAL='#4DD0E1',BLU='#7C8CFF',GRN='#66D9A0',ORG='#FF9F5B',PUR='#C792EA',PINK='#FF8FA3',ROAD='#4A5070',GLASS='#CFE8FF';
+const PAL=[RED,YEL,TEAL,BLU,GRN,ORG,PUR,PINK];
+const AR={c:null,ctx:null,W:0,H:0,F:1,raf:0,t0:0,groups:[],sh:[],npc:'',mood:'idle',moodT:0,yaw:0,pit:0,ptrT:-9999,px:0,py:0,gx:null,head:null,C:null};
+
+function arBuild(id,label){
+  const o=[],sh=[];let cur=null;
+  const add=p=>{p.a=p.a==null?1:p.a;cur?cur.push(p):o.push([p]);};
+  const grp=fn=>{cur=[];fn();o.push(cur);cur=null;};
+  const B=(x,y,z,w,h,d,c,a)=>add({k:'b',x,y,z,w,h,d,c:rgb(c),a});
+  const Cy=(x,y,z,rb,rt,h,c,a)=>add({k:'c',x,y,z,rb,rt,h,c:rgb(c),a});
+  const Sp=(x,y,z,r,c)=>add({k:'s',x,y,z,r,c:rgb(c)});
+  const L=(x,y,z,t,h,c)=>add({k:'l',x,y,z,t,h,c:c||'#fff'});
+  const Sh=(x,z,rx,rz)=>sh.push([x,z,rx,rz]);
+  const wall=()=>grp(()=>B(0,0,-2.15,7,2.8,.1,'#DDE3FF',.3));
+  const desk=(x,z)=>grp(()=>{B(x,.68,z,.9,.07,.55,WOOD);[[-.4,-.2],[.4,-.2],[-.4,.2],[.4,.2]].forEach(([a,b])=>B(x+a,0,z+b,.06,.68,.06,WOOD2));Sh(x,z,.55,.4);});
+  const chair=(x,z,c)=>grp(()=>{B(x,0,z,.1,.4,.1,GR);B(x,.4,z,.42,.05,.42,c||BLU);B(x,.45,z-.2,.42,.42,.05,c||BLU);});
+  const tree=(x,z,s)=>grp(()=>{Cy(x,0,z,.09*s,.07*s,.8*s,WOOD2);Sp(x,1.1*s,z,.5*s,GRN);Sh(x,z,.45*s,.35*s);});
+  const shelf=(x,z)=>grp(()=>{B(x,0,z,1.5,1.7,.4,'#8892B0');for(let r=0;r<4;r++)for(let i=0;i<5;i++)B(x-.6+i*.27,.12+r*.42,z+.2,.2,.26,.2,PAL[(r*3+i)%PAL.length]);Sh(x,z,.9,.35);});
+  const car=(x,z,c)=>grp(()=>{B(x,.2,z,1.6,.42,.8,c);B(x+.05,.62,z,.9,.36,.7,GLASS,.85);Cy(x-.5,0,z+.36,.17,.17,.2,'#1E2240');Cy(x+.5,0,z+.36,.17,.17,.2,'#1E2240');Sh(x,z,1,.55);});
+  switch(id){
+  case 'gate':
+    grp(()=>B(-2.2,0,-1,.35,2.2,.35,WH));
+    grp(()=>B(.4,0,-1,.35,2.2,.35,WH));
+    grp(()=>{B(-.9,2.2,-1,3.3,.4,.4,BLU);L(-.9,2.4,-.78,'WELCOME',.26);});
+    grp(()=>{Cy(-2.7,0,-1.3,.05,.04,3.1,GR);B(-2.35,2.55,-1.3,.7,.42,.03,RED);});
+    grp(()=>{B(-.9,.4,.9,1.3,.07,.4,WOOD);B(-1.4,0,.9,.07,.4,.35,WOOD2);B(-.4,0,.9,.07,.4,.35,WOOD2);B(-.9,.47,.72,1.3,.4,.05,WOOD);Sh(-.9,.9,.8,.35);});
+    grp(()=>{Sp(-2.3,.35,.7,.38,GRN);Sh(-2.3,.7,.4,.3);});
+    break;
+  case 'classroom':
+    wall();
+    grp(()=>{B(-.7,1,-2.05,2.8,1.2,.05,WH);B(-1.5,1.9,-2,1.2,.06,.02,BLU);B(-1.3,1.65,-2,1.6,.06,.02,BLU);B(-1.6,1.4,-2,.8,.06,.02,BLU);});
+    grp(()=>Sp(1.5,2.1,-2,.25,WH));
+    desk(-.4,-1.2);desk(-2,.1);desk(-.9,.5);chair(-2,.65);chair(-.9,1.05,GRN);
+    break;
+  case 'group':
+    wall();
+    grp(()=>{B(-1.7,1.15,-2.05,1.5,1.1,.05,YEL);B(.1,1.15,-2.05,1.3,1.1,.05,PINK);});
+    [0,1,2,3].forEach(i=>{const a=i*Math.PI/2+.5;grp(()=>Cy(-.6+Math.cos(a)*1.25,0,.2+Math.sin(a)*.95,.2,.2,.4,[BLU,GRN,ORG,PUR][i]));});
+    grp(()=>{Cy(-.6,0,.2,.08,.08,.68,WOOD2);Cy(-.6,.68,.2,.9,.9,.07,WOOD);B(-.9,.75,.1,.4,.01,.3,WH);B(-.3,.75,.3,.4,.02,.3,GR);B(-.3,.77,.12,.4,.28,.02,DK);Sh(-.6,.2,1,.8);});
+    break;
+  case 'lab':
+    wall();
+    grp(()=>{B(-1.7,1.6,-2,2.4,.05,.3,WOOD);for(let i=0;i<5;i++)Cy(-2.6+i*.45,1.65,-2,.09,.09,.3,PAL[i]);});
+    grp(()=>{B(.2,1.2,-2.05,.9,.9,.05,ORG);L(.2,1.65,-2,'!',.6);});
+    grp(()=>{B(-.9,0,-.4,2.6,.86,.75,WH);B(-.9,.86,-.4,2.7,.06,.85,GR);Cy(-1.8,.92,-.4,.13,.16,.32,GRN,.8);Cy(-1.4,.92,-.4,.1,.1,.4,RED,.8);Sp(-.6,1.1,-.4,.22,PUR);Cy(-.6,1.24,-.4,.06,.06,.3,WH);Cy(-.1,.92,-.4,.15,.15,.25,TEAL,.8);Sh(-.9,-.4,1.4,.5);});
+    break;
+  case 'event':
+    wall();
+    grp(()=>{for(let i=0;i<9;i++)B(-2.6+i*.65,2.62,-1.5,.3,.3,.02,PAL[i%8]);});
+    grp(()=>{B(-.9,2.05,-1.6,3.2,.5,.05,PINK);L(-.9,2.3,-1.56,'SCIENCE FAIR',.3);});
+    grp(()=>{B(-1,0,-.3,2.2,.8,.7,RED);B(-1,.8,-.3,2.3,.06,.75,WH);B(-1.4,.86,-.3,.4,.3,.3,DK);Sp(-.4,1.1,-.3,.2,YEL);Sh(-1,-.3,1.3,.5);});
+    grp(()=>{Cy(-2.35,0,.5,.01,.01,1.2,WH);Sp(-2.35,1.45,.5,.28,YEL);});
+    grp(()=>{Cy(-2.0,0,.7,.01,.01,1.0,WH);Sp(-2,1.25,.7,.26,TEAL);});
+    grp(()=>{Cy(-2.7,0,.6,.01,.01,1.1,WH);Sp(-2.7,1.35,.6,.26,PINK);});
+    break;
+  case 'restaurant':
+    wall();
+    grp(()=>{B(-.4,1.4,-2.05,3,1,.05,DK);B(-1.5,1.5,-2,.6,.55,.02,ORG);B(-.7,1.5,-2,.6,.55,.02,YEL);B(.1,1.5,-2,.6,.55,.02,TEAL);B(.9,1.5,-2,.6,.55,.02,PINK);L(-.4,2.25,-2,'MENU',.22);});
+    grp(()=>{B(-.4,2.5,-2.05,2,.35,.05,RED);L(-.4,2.67,-2.0,'BURGER HUB',.2);});
+    grp(()=>{B(-.4,0,-.5,3,1,.8,RED);B(-.4,1,-.5,3.1,.06,.9,WH);B(-1.3,1.06,-.6,.5,.35,.4,DK);Cy(.2,1.06,-.45,.22,.22,.07,ORG);Cy(.2,1.13,-.45,.2,.2,.05,'#6B3E26');Cy(.2,1.18,-.45,.22,.2,.09,ORG);Cy(.9,1.06,-.5,.12,.09,.3,WH);B(.6,1.06,-.35,.2,.25,.15,YEL);Sh(-.4,-.5,1.7,.6);});
+    break;
+  case 'store':
+    wall();shelf(-1.9,-1.5);shelf(-.35,-1.5);
+    grp(()=>{B(-1.1,2.25,-1.6,2.2,.36,.05,BLU);L(-1.1,2.43,-1.56,'STORE',.28);});
+    grp(()=>{B(.5,0,.2,1.1,.9,.5,WOOD2);B(.5,.9,.2,1.2,.06,.6,WH);B(.4,.96,.2,.4,.3,.3,DK);B(.85,.96,.2,.3,.16,.22,ORG);Sh(.5,.2,.8,.4);});
+    break;
+  case 'street':
+    grp(()=>B(-1.9,0,-1.5,1.6,1.8,.8,PUR));
+    grp(()=>{B(-.05,0,-1.55,1.7,2.5,.8,TEAL);L(-.05,2.2,-1.13,'MALL',.3);for(let i=0;i<3;i++)B(-.6+i*.55,1.0,-1.14,.35,.5,.02,GLASS);});
+    grp(()=>B(0,0,-.2,7,.06,1.1,'#B7BEDD'));
+    grp(()=>{B(0,0,1.1,7,.03,1.6,ROAD);for(let i=0;i<6;i++)B(-2.5+i,.03,1.1,.5,.01,.08,WH);});
+    grp(()=>{Cy(1,0,-.3,.05,.05,2.1,GR);B(1,1.75,-.3,.95,.24,.05,GRN);L(1,1.87,-.27,'TERMINAL',.15);B(1,1.42,-.3,.95,.24,.05,BLU);L(1,1.54,-.27,'PARK',.15);});
+    tree(-2.7,-.4,1);
+    break;
+  case 'busstop':
+    grp(()=>{B(-.5,0,-1.75,3.6,1.5,1,ORG);for(let i=0;i<4;i++)B(-1.85+i*.9,.85,-1.24,.6,.45,.02,GLASS);B(-.5,1.5,-1.75,3.6,.06,1,DK);});
+    grp(()=>Cy(-2,0,.1,.05,.05,2.2,GR));
+    grp(()=>Cy(0,0,.1,.05,.05,2.2,GR));
+    grp(()=>B(-1,2.2,.1,2.4,.08,1,BLU,.9));
+    grp(()=>{B(-1,.42,.15,1.6,.08,.4,WOOD);B(-1.7,0,.15,.07,.42,.35,WOOD2);B(-.3,0,.15,.07,.42,.35,WOOD2);});
+    grp(()=>{Cy(.8,0,.6,.04,.04,2,GR);B(.8,1.8,.6,.55,.55,.04,BLU);L(.8,2.07,.63,'BUS',.22);});
+    break;
+  case 'clinic':
+    wall();
+    grp(()=>{B(-.6,1.3,-2.05,2.3,1.15,.05,WH);for(let r=0;r<4;r++)for(let i=0;i<5;i++)B(-1.4+i*.4,1.4+r*.24,-2,.32,.18,.02,(r*5+i)%7===3?RED:'#DDE3FF');});
+    grp(()=>{B(-.6,2.55,-2.05,2.4,.32,.05,TEAL);L(-.6,2.71,-2,'APPOINTMENTS',.2);});
+    grp(()=>{B(-.6,0,-.5,2.6,.9,.6,WH);B(-.6,.9,-.5,2.7,.06,.7,TEAL);B(-1.2,.96,-.5,.4,.3,.25,DK);Sh(-.6,-.5,1.5,.5);});
+    chair(-2.3,.7,ORG);chair(-1.7,.7,ORG);
+    break;
+  case 'info':
+    wall();
+    grp(()=>{B(-.5,0,-.6,2.4,.9,.6,ORG);B(-.5,.9,-.6,2.5,.06,.7,WH);Sh(-.5,-.6,1.5,.5);});
+    grp(()=>{B(-1,.96,-.6,.06,.94,.06,GR);B(0,.96,-.6,.06,.94,.06,GR);B(-.5,1.9,-.6,1.2,.42,.08,BLU);L(-.5,2.11,-.55,label||'INFO',.26);});
+    grp(()=>{Cy(-2.2,0,-1.1,.25,.25,1.8,GR);Sp(-2.2,1.95,-1.1,.28,YEL);});
+    chair(-2.2,.8,GRN);
+    break;
+  case 'service':
+    wall();
+    grp(()=>{B(-1,0,-.9,3.4,1,.5,GR);B(-1,1,-.9,3.5,.06,.6,WH);[-2,-1,0].forEach(x=>B(x,1.06,-.9,.9,.85,.04,GLASS,.35));Sh(-1,-.9,1.9,.4);});
+    grp(()=>{B(-1,2,-2,1.8,.55,.05,DK);L(-1,2.28,-1.96,'NOW SERVING 12',.15,'#7FE3FF');});
+    grp(()=>{B(-2.6,0,.4,.4,1.2,.35,RED);B(-2.6,.9,.6,.28,.14,.02,DK);Sh(-2.6,.4,.4,.3);});
+    break;
+  case 'medical':
+    wall();
+    grp(()=>{B(0,1.4,-2.05,.28,.9,.05,RED);B(0,1.71,-2.05,.9,.28,.05,RED);});
+    grp(()=>{B(-1.2,0,-.6,1.9,.45,.9,GR,.7);B(-1.2,.45,-.6,1.9,.16,.9,WH);B(-2,.61,-.6,.5,.12,.5,'#DDE3FF');B(-.95,.61,-.6,1.25,.05,.86,TEAL);Sh(-1.2,-.6,1.1,.6);});
+    grp(()=>{Cy(-2.5,0,-1,.25,.25,.03,GR);Cy(-2.5,.03,-1,.03,.03,1.8,GR);B(-2.5,1.4,-1,.22,.38,.08,WH,.85);});
+    break;
+  case 'accident':
+    grp(()=>B(0,0,.1,7,.03,2.6,ROAD));
+    car(-1.4,-.25,RED);car(.3,.15,BLU);
+    [[-2.6,.6],[-2.3,1.2],[1.1,1.3]].forEach(([x,z])=>grp(()=>{Cy(x,.03,z,.16,.03,.5,ORG);Sh(x,z,.2,.2);}));
+    break;
+  case 'lost':
+    wall();
+    grp(()=>{B(-1,2.55,-2.05,1.6,.26,.05,BLU);L(-1,2.68,-2,'MALL MAP',.16);});
+    grp(()=>{B(-1,1,-2.05,2.6,1.5,.05,WH);B(-1.9,1.1,-2,.7,.5,.02,GRN);B(-1,1.9,-2,.9,.4,.02,TEAL);B(-.1,1.15,-2,.5,.55,.02,PINK);B(-1,1.55,-2,2.4,.08,.02,GR);Sp(-1.3,1.72,-1.97,.09,RED);L(-1.3,1.97,-1.97,'YOU ARE HERE',.1,'#171B3A');});
+    grp(()=>{Cy(-2.6,0,-.5,.05,.05,2.1,GR);B(-2.6,1.75,-.5,.9,.24,.05,GRN);L(-2.6,1.87,-.47,'EXIT',.15);});
+    grp(()=>{B(-.6,.4,.9,1.3,.07,.4,WOOD);B(-1.1,0,.9,.07,.4,.35,WOOD2);B(-.1,0,.9,.07,.4,.35,WOOD2);Sh(-.6,.9,.8,.35);});
+    break;
+  default:
+    grp(()=>{B(-1.2,0,-.5,1,.9,.6,BLU);L(-1.2,.45,-.19,'PRACTICE',.12);Sh(-1.2,-.5,.7,.4);});
+  }
+  return {o,sh};
+}
+
+function arCam(){
+  const R=5.6,ty=1.0,pit=.22+AR.pit,yw=AR.yaw;
+  const p=[R*Math.sin(yw)*Math.cos(pit),ty+R*Math.sin(pit),R*Math.cos(yw)*Math.cos(pit)];
+  let f=[-p[0],ty-p[1],-p[2]];const fl=Math.hypot(f[0],f[1],f[2]);f=f.map(v=>v/fl);
+  const rl=Math.hypot(f[2],f[0]);const r=[-f[2]/rl,0,f[0]/rl];
+  const u=[r[1]*f[2]-r[2]*f[1],r[2]*f[0]-r[0]*f[2],r[0]*f[1]-r[1]*f[0]];
+  return {p,f,r,u};
+}
+function proj(C,x,y,z){
+  const dx=x-C.p[0],dy=y-C.p[1],dz=z-C.p[2];
+  const zc=dx*C.f[0]+dy*C.f[1]+dz*C.f[2],s=AR.F/zc;
+  return [AR.W/2+(dx*C.r[0]+dy*C.r[1]+dz*C.r[2])*s,AR.H*.62-(dx*C.u[0]+dy*C.u[1]+dz*C.u[2])*s,zc,s];
+}
+function quad(g,C,pts,col){
+  g.beginPath();
+  pts.forEach((q,i)=>{const s=proj(C,q[0],q[1],q[2]);i?g.lineTo(s[0],s[1]):g.moveTo(s[0],s[1]);});
+  g.closePath();g.fillStyle=col;g.fill();g.strokeStyle='rgba(10,12,32,.22)';g.lineWidth=1;g.stroke();
+}
+function drawPrim(g,C,p,t){
+  if(p.k==='b'){
+    const x0=p.x-p.w/2,x1=p.x+p.w/2,y0=p.y,y1=p.y+p.h,z0=p.z-p.d/2,z1=p.z+p.d/2,c=p.c;
+    g.globalAlpha=p.a;
+    if(C.p[0]<x0)quad(g,C,[[x0,y0,z1],[x0,y0,z0],[x0,y1,z0],[x0,y1,z1]],shade(c,.92));
+    if(C.p[0]>x1)quad(g,C,[[x1,y0,z0],[x1,y0,z1],[x1,y1,z1],[x1,y1,z0]],shade(c,.68));
+    if(C.p[2]<z0)quad(g,C,[[x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0]],shade(c,.55));
+    if(C.p[2]>z1)quad(g,C,[[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]],shade(c,.86));
+    if(C.p[1]>y1)quad(g,C,[[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]],shade(c,1.06));
+    g.globalAlpha=1;
+  }else if(p.k==='c'){
+    const n=10,c=p.c;g.globalAlpha=p.a;
+    for(let i=0;i<n;i++){
+      const a0=i/n*6.2832,a1=(i+1)/n*6.2832,am=(a0+a1)/2,nx=Math.cos(am),nz=Math.sin(am),rm=(p.rb+p.rt)/2;
+      if((C.p[0]-(p.x+nx*rm))*nx+(C.p[2]-(p.z+nz*rm))*nz<=0)continue;
+      const f=.66+.4*Math.max(0,-.5*nx+.5*nz+.2);
+      quad(g,C,[[p.x+Math.cos(a0)*p.rb,p.y,p.z+Math.sin(a0)*p.rb],[p.x+Math.cos(a1)*p.rb,p.y,p.z+Math.sin(a1)*p.rb],[p.x+Math.cos(a1)*p.rt,p.y+p.h,p.z+Math.sin(a1)*p.rt],[p.x+Math.cos(a0)*p.rt,p.y+p.h,p.z+Math.sin(a0)*p.rt]],shade(c,f));
+    }
+    if(C.p[1]>p.y+p.h){const pts=[];for(let i=0;i<n;i++){const a=i/n*6.2832;pts.push([p.x+Math.cos(a)*p.rt,p.y+p.h,p.z+Math.sin(a)*p.rt]);}quad(g,C,pts,shade(c,1.08));}
+    g.globalAlpha=1;
+  }else if(p.k==='s'){
+    const q=proj(C,p.x,p.y,p.z),r=p.r*q[3],c=p.c;
+    const gr=g.createRadialGradient(q[0]-r*.35,q[1]-r*.4,r*.1,q[0],q[1],r);
+    gr.addColorStop(0,shade(c,1.18));gr.addColorStop(1,shade(c,.72));
+    g.fillStyle=gr;g.beginPath();g.arc(q[0],q[1],r,0,6.2832);g.fill();
+    if(p.face){
+      AR.head=[q[0],q[1],r];
+      g.fillStyle='#3B2A24';g.beginPath();g.arc(q[0],q[1],r,Math.PI*1.08,Math.PI*1.92);g.closePath();g.fill();
+      const fx=-AR.yaw*r*1.4,ex=r*.36,ey=q[1]+r*.06,bl=(t%3.6)<.12?.2:1;
+      g.fillStyle='#3B2A24';
+      g.beginPath();g.ellipse(q[0]+fx-ex,ey,r*.09,r*.09*bl,0,0,6.2832);g.fill();
+      g.beginPath();g.ellipse(q[0]+fx+ex,ey,r*.09,r*.09*bl,0,0,6.2832);g.fill();
+      g.strokeStyle='#5A2E1B';g.lineWidth=Math.max(1.5,r*.07);g.lineCap='round';g.beginPath();
+      const my=q[1]+r*.45,mx=q[0]+fx;
+      if(AR.mood==='happy'){g.moveTo(mx-r*.28,my-r*.05);g.quadraticCurveTo(mx,my+r*.3,mx+r*.28,my-r*.05);}
+      else if(AR.mood==='confused'){g.moveTo(mx-r*.26,my+r*.03);g.quadraticCurveTo(mx-r*.1,my-r*.1,mx,my+r*.03);g.quadraticCurveTo(mx+r*.1,my+r*.16,mx+r*.26,my+r*.03);}
+      else{g.moveTo(mx-r*.2,my);g.lineTo(mx+r*.2,my);}
+      g.stroke();
+    }
+  }else if(p.k==='l'){
+    const q=proj(C,p.x,p.y,p.z);
+    g.font=`800 ${Math.max(7,p.h*q[3])}px Figtree,system-ui,sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillStyle=p.c;g.fillText(p.t,q[0],q[1]);
+  }
+}
+const NPC_PAL=['#7C8CFF','#66D9A0','#FF9F5B','#C792EA','#4DD0E1','#FF8FA3','#FFC53D'];
+const npcColor=n=>NPC_PAL[[...n].reduce((a,ch)=>a+ch.charCodeAt(0),0)%NPC_PAL.length];
+function npcGroup(t,now){
+  const x=1.75,z=-.2,c=rgb(npcColor(AR.npc)),sk=rgb('#F2C6A0'),dk=rgb('#2C3466'),age=(now-AR.moodT)/1000;
+  let bob=Math.sin(t*2)*.012,hx=0,arm=0;
+  if(AR.mood==='happy'&&age<3){bob=Math.abs(Math.sin(age*7))*.1*Math.max(0,1-age/3);arm=.28+Math.sin(age*14)*.05;}
+  if(AR.mood==='confused'&&age<3)hx=Math.sin(age*6)*.07;
+  return [
+    {k:'b',x:x-.13,y:0,z,w:.17,h:.55,d:.17,c:dk,a:1},{k:'b',x:x+.13,y:0,z,w:.17,h:.55,d:.17,c:dk,a:1},
+    {k:'b',x,y:.55+bob,z,w:.52,h:.72,d:.3,c,a:1},
+    {k:'b',x:x-.35,y:.58+bob,z,w:.13,h:.6,d:.14,c,a:1},{k:'b',x:x+.35,y:.58+bob+arm,z,w:.13,h:.6,d:.14,c,a:1},
+    {k:'s',x:x+hx,y:1.47+bob,z,r:.25,c:sk,face:true,a:1}
+  ];
+}
+function drawFloor(g,C,t){
+  const X=3.4,Z=2.6;
+  g.beginPath();[[-X,-Z],[X,-Z],[X,Z],[-X,Z]].forEach((q,i)=>{const s=proj(C,q[0],0,q[1]);i?g.lineTo(s[0],s[1]):g.moveTo(s[0],s[1]);});
+  g.closePath();g.fillStyle='rgba(127,227,255,.10)';g.fill();
+  g.strokeStyle='rgba(127,227,255,.26)';g.lineWidth=1;g.beginPath();
+  for(let z=-Z;z<=Z+.01;z+=.65){const a=proj(C,-X,0,z),b=proj(C,X,0,z);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);}
+  for(let x=-X;x<=X+.01;x+=.85){const a=proj(C,x,0,-Z),b=proj(C,x,0,Z);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);}
+  g.stroke();
+  const shapes=AR.sh.concat([[1.75,-.2,.5,.32]]);
+  g.fillStyle='rgba(0,0,0,.3)';
+  shapes.forEach(([x,z,rx,rz])=>{g.beginPath();for(let i=0;i<16;i++){const a=i/16*6.2832,s=proj(C,x+Math.cos(a)*rx,.004,z+Math.sin(a)*rz);i?g.lineTo(s[0],s[1]):g.moveTo(s[0],s[1]);}g.closePath();g.fill();});
+  const rr=.55+.04*Math.sin(t*3);
+  g.strokeStyle='rgba(127,227,255,.85)';g.lineWidth=2;g.setLineDash([6,5]);g.beginPath();
+  for(let i=0;i<=40;i++){const a=i/40*6.2832,s=proj(C,-.3+Math.cos(a)*rr,.005,1.35+Math.sin(a)*rr);i?g.lineTo(s[0],s[1]):g.moveTo(s[0],s[1]);}
+  g.stroke();g.setLineDash([]);
+}
+function arInit(){
+  cancelAnimationFrame(AR.raf);
+  AR.c=$('#arc');if(!AR.c)return;
+  AR.ctx=AR.c.getContext('2d');
+  const b=arBuild(P.sc.scene,P.sc.label);AR.groups=b.o;AR.sh=b.sh;
+  AR.npc=P.sc.steps[P.i].npc;AR.t0=performance.now();AR.W=0;AR.head=null;
+  const st=$('#stage');
+  st.onpointermove=e=>{const r=st.getBoundingClientRect();AR.px=((e.clientX-r.left)/r.width-.5)*2;AR.py=((e.clientY-r.top)/r.height-.5)*2;AR.ptrT=performance.now();};
+  AR.raf=requestAnimationFrame(arFrame);
+}
+window.addEventListener('deviceorientation',e=>{if(e.gamma!=null)AR.gx=Math.max(-1,Math.min(1,e.gamma/25));});
+function arFrame(now){
+  if(!AR.c||!AR.c.isConnected)return;
+  AR.raf=requestAnimationFrame(arFrame);
+  const st=AR.c.parentElement,W=st.clientWidth,H=st.clientHeight,dpr=Math.min(2,window.devicePixelRatio||1);
+  if(W!==AR.W||H!==AR.H){AR.W=W;AR.H=H;AR.c.width=W*dpr;AR.c.height=H*dpr;AR.ctx.setTransform(dpr,0,0,dpr,0,0);AR.F=H*1.02;}
+  const t=(now-AR.t0)/1000;let ty,tp;
+  if(now-AR.ptrT<2500){ty=AR.px*.3;tp=AR.py*.06;}
+  else if(AR.gx!=null){ty=AR.gx*.3;tp=0;}
+  else{ty=Math.sin(t*.5)*.14;tp=Math.sin(t*.37)*.02;}
+  AR.yaw+=(ty-AR.yaw)*.07;AR.pit+=(tp-AR.pit)*.07;
+  const C=arCam(),g=AR.ctx;AR.C=C;
+  g.clearRect(0,0,W,H);
+  drawFloor(g,C,t);
+  const groups=AR.groups.concat([npcGroup(t,now)]);
+  groups.forEach(gr=>{gr.k=(gr[0].x-C.p[0])**2+(gr[0].z-C.p[2])**2;});
+  groups.sort((a,b)=>b.k-a.k);
+  groups.forEach(gr=>gr.forEach(p=>drawPrim(g,C,p,t)));
+  if(AR.head&&AR.mood!=='idle'){
+    const hx=AR.head[0],hy=AR.head[1],r=AR.head[2],bx=hx-r*1.2,by=hy-r*1.15,br=Math.max(9,r*.42),ok=AR.mood==='happy';
+    g.fillStyle=ok?'#2FBF71':'#FFC53D';g.beginPath();g.arc(bx,by,br,0,6.2832);g.fill();
+    g.fillStyle=ok?'#fff':'#3F2C00';g.font=`800 ${br*1.3}px Figtree,system-ui,sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(ok?'\u2713':'?',bx,by+1);
+  }
+  const bub=$('#bubble');
+  if(bub&&AR.head){
+    const bw=bub.offsetWidth,bh=bub.offsetHeight,hx=AR.head[0],hr=AR.head[2];
+    let left=Math.max(8,Math.min(W-bw-8,hx-bw+44));
+    const top=Math.max(52,AR.head[1]-hr*1.35-bh-12);
+    bub.style.transform=`translate(${left}px,${top}px)`;
+    bub.style.setProperty('--tx',Math.max(18,Math.min(bw-18,hx-left))+'px');
+    bub.classList.add('on');
+  }
+}
+
+/* ---------- play ---------- */
+function playV(){
+  const st=P.sc.steps[P.i],tg=sg(st.t),n=P.sc.steps.length,show=P.sc.reveal||P.hint;
+  return `
+  <div class="crumb"><button class="btn ghost sm" data-a="exit">${ic('arrowL',16)} Exit</button><span class="chip">${ic('star',16,true)} ${S.points.toLocaleString()} points</span></div>
+  <div class="playgrid">
+   <div class="cam">
+    <div class="stage" id="stage">
+      <svg class="bust" viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="200" cy="120" r="46" fill="#3a4390"/><path d="M90 300c0-70 50-110 110-110s110 40 110 110z" fill="#3a4390"/></svg>
+      <video id="vid" autoplay muted playsinline hidden></video>
+      <canvas id="arc" aria-hidden="true"></canvas>
+      <div class="zone"><span>Sign here</span></div>
+      ${handLive()}
+      <div class="hud"><div class="hrow"><span class="chip-ar">${ic('pin',14)} ${P.sc.name}</span><span class="chip-ar stepc">Step ${P.i+1} of ${n}</span></div><span class="tag-ar">Scene anchored to your space</span></div>
+      <div class="arbubble" id="bubble"></div>
+      <div class="status" id="status"></div>
+      <div id="over"></div>
+      <div class="objbar"><span>Objective</span><b>${st.obj}</b></div>
+      <span class="hint3d">Move your pointer or tilt your phone to look around</span>
+    </div>
+    <div class="controls">
+      <button class="btn primary big" id="signBtn" data-a="doSign">${ic('camera',22)} Sign now</button>
+      <button class="btn ghost sm" data-a="cam" id="camBtn">${CAM?'Turn camera off':'Use my camera'}</button>
+    </div>
+    <div class="demo"><p>Prototype control: choose what the recognizer returns on the next attempt.</p>
+      <div class="seg" role="group" aria-label="Next recognition result">
+        <button data-a="demo" data-d="ok" aria-pressed="${P.demo==='ok'}">Correct sign</button>
+        <button data-a="demo" data-d="wrong" aria-pressed="${P.demo==='wrong'}">Different sign</button>
+        <button data-a="demo" data-d="low" aria-pressed="${P.demo==='low'}">Unclear hand</button>
+      </div></div>
+   </div>
+   <div class="stack">
+    <section class="panel">
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap"><h1 class="h2">${P.sc.name}</h1><span class="chip lv">Level ${P.sc.lvl}</span></div>
+      <div class="row" style="margin:12px 0 14px"><div class="dots" style="margin:0">${P.sc.steps.map((_,i)=>`<i style="background:${i<P.i?'var(--ok)':i===P.i?'var(--primary)':'var(--surface2)'}"></i>`).join('')}</div><small class="muted">${n>1?`Sign ${P.i+1} of ${n} in this sequence`:'Single sign'}</small></div>
+      <p class="muted">${st.tr}</p>
+    </section>
+    <section class="panel">
+      <div class="objective"><span class="muted" style="font-size:14px">Your objective</span><h2 class="h2">${st.obj}</h2>
+        ${show?`<p style="margin-top:8px">${P.hint?'Hint: ':'Sign: '}<b>${tg.fil}</b> <span class="muted">(${tg.en})</span></p>`:''}</div>
+      ${show?'':`<button class="btn sm" style="margin-top:14px" data-a="hint">${ic('bulb',16)} Show hint (-5 points)</button>`}
+    </section>
+    <section aria-live="polite"><div id="fb"></div></section>
+   </div>
+  </div>`;
+}
+function afterPlay(){
+  if(CAM){const v=$('#vid');v.srcObject=CAM;v.hidden=false;}
+  HAND_T=setInterval(tickHand,110);
+  arInit();paint();
+}
+function tickHand(){
+  const h=$('#hand');if(!h||!P)return;
+  const j=P.phase==='record'?1.4:P.phase==='result'||P.phase==='recognize'?0:.5;
+  const p=LM.map(q=>[q[0]+(Math.random()-.5)*j,q[1]+(Math.random()-.5)*j]);
+  h.querySelectorAll('line').forEach(l=>{const a=p[+l.dataset.a],b=p[+l.dataset.b];l.setAttribute('x1',a[0]);l.setAttribute('y1',a[1]);l.setAttribute('x2',b[0]);l.setAttribute('y2',b[1]);});
+  h.querySelectorAll('circle').forEach(c=>{const q=p[+c.dataset.i];c.setAttribute('cx',q[0]);c.setAttribute('cy',q[1]);});
+}
+function paint(){
+  const st=$('#stage');if(!st)return;
+  const status=$('#status'),over=$('#over'),fb=$('#fb'),btn=$('#signBtn'),bub=$('#bubble');
+  const ph=P.phase,L=P.last,step=P.sc.steps[P.i];
+  st.className='stage'+(ph==='record'?' rec':'')+(ph==='result'?' res '+(L.kind==='ok'?'okc':'badc'):'');
+  let s='<i></i>Hand detected',o='',f='',mood='idle',say=step.text;
+  if(ph==='idle'){f=`<div class="fb"><b class="t">Ready when you are</b>Press <b>Sign now</b>, then perform the gesture in the sign zone. ${step.npc==='Coach'?'Your coach':step.npc} will react to what you sign.</div>`;}
+  if(ph==='count'){s='<i></i>Get ready';o=`<div class="count"><span>${P.n}</span></div>`;f=`<div class="fb"><b class="t">Get ready</b>Keep your hand inside the sign zone.</div>`;}
+  if(ph==='record'){s='<i></i>Recording sign';o='<div class="timer"><i></i></div>';f=`<div class="fb"><b class="t">Recording</b>Hold the sign steady.</div>`;}
+  if(ph==='recognize'){s='<i></i>Recognizing';o='<div class="spin"></div>';f=`<div class="fb"><b class="t">Checking your sign</b>Comparing it with the signs in this scene.</div>`;}
+  if(ph==='result'){
+    if(L.kind==='ok'){
+      mood='happy';say=REPLY[step.t]||'Nice! I understood you.';
+      s=`<i></i>Recognized: ${L.rec.fil}, ${L.conf}%`;
+      f=`<div class="fb ok"><b class="t">Objective met. +${L.pts} points</b>Senyas recognized <b>${L.rec.fil}</b> (${L.conf}% confidence). Response time: ${L.time.toFixed(1)} seconds.<div class="acts"><button class="btn primary" data-a="next">${P.i===P.sc.steps.length-1?'See results':'Next sign'} ${ic('arrowR',18)}</button></div></div>`;
+    }else if(L.kind==='wrong'){
+      mood='confused';say="Hmm, I didn't understand that sign.";
+      s=`<i style="background:#FF8F94"></i>Recognized: ${L.rec.fil}, ${L.conf}%`;
+      f=`<div class="fb bad"><b class="t">Not quite. Try again</b>Senyas saw <b>${L.rec.fil}</b>, but this scene needs a different sign. Review the sign, then retry. Your attempt was recorded.<div class="acts"><button class="btn primary" data-a="retry">${ic('refresh',18)} Try again</button><button class="btn ghost" data-a="review">Review the sign</button></div></div>`;
+    }else{
+      say="I can't see your hands clearly.";
+      s=`<i style="background:#FFC53D"></i>Hand unclear, ${L.conf}%`;
+      f=`<div class="fb warn"><b class="t">Senyas could not see your hand clearly</b>Move to brighter light, keep your whole hand in the frame, and hold the sign steady. This did not count as an attempt.<div class="acts"><button class="btn primary" data-a="retry">${ic('refresh',18)} Try again</button></div></div>`;
+    }
+  }
+  if(AR.mood!==mood){AR.mood=mood;AR.moodT=performance.now();}
+  bub.innerHTML=`<small>${step.npc}</small><b>${say}</b>`;
+  status.className='status'+(ph==='record'?' rec':'');status.innerHTML=s;over.innerHTML=o;fb.innerHTML=f;
+  btn.disabled=!(ph==='idle');
+}
+function openScenario(id,practice){
+  let sc,i=0;
+  if(practice){const s=sg(practice);sc={id:'practice',name:'Practice: '+s.fil,lvl:1,scene:'practice',reveal:true,steps:[{npc:'Coach',text:'Perform the sign in front of the camera.',tr:s.en,obj:'Perform "'+s.fil+'" ('+s.en+').',t:s.id}]};}
+  else{sc=SCEN.find(x=>x.id===id);i=S.resume[id]||0;}
+  AR.mood='idle';
+  P={sc,i,phase:'idle',att:0,stepAtt:0,hint:false,t0:Date.now(),demo:(P&&P.demo)||'ok',pts:0,times:[],last:null,run:0};
+  go('play');
+}
+function doSign(){
+  if(P.phase!=='idle')return;
+  const run=++P.run;P.think=(Date.now()-P.t0)/1000;P.phase='count';P.n=3;paint();
+  const alive=()=>P&&P.run===run&&S.view==='play';
+  const tick=()=>{if(!alive())return;P.n--;if(P.n>0){paint();setTimeout(tick,650);}else{P.phase='record';paint();setTimeout(()=>{if(!alive())return;P.phase='recognize';paint();setTimeout(()=>{if(alive())finish();},800);},1300);}};
+  setTimeout(tick,650);
+}
+function finish(){
+  const step=P.sc.steps[P.i],tg=sg(step.t);
+  if(P.demo==='ok'){
+    P.att++;P.stepAtt++;
+    const pts=Math.max(0,(P.stepAtt===1?50:30)-(P.hint?5:0));P.pts+=pts;S.points+=pts;P.times.push(P.think);
+    P.last={kind:'ok',rec:tg,conf:88+Math.floor(Math.random()*10),time:P.think,pts};
+  }else if(P.demo==='wrong'){
+    P.att++;P.stepAtt++;
+    const other=SIGNS.filter(s=>s.id!==tg.id&&s.m>0);
+    P.last={kind:'wrong',rec:other[Math.floor(Math.random()*other.length)],conf:55+Math.floor(Math.random()*18)};
+  }else{P.last={kind:'low',conf:28+Math.floor(Math.random()*10)};}
+  P.phase='result';paint();
+}
+function nextStep(){
+  if(P.i<P.sc.steps.length-1){P.i++;P.stepAtt=0;P.hint=false;P.phase='idle';P.t0=Date.now();P.last=null;if(P.sc.id!=='practice')S.resume[P.sc.id]=P.i;AR.mood='idle';render();return;}
+  completeModal();
+}
+function completeModal(){
+  const n=P.sc.steps.length,acc=Math.round(n/Math.max(P.att,n)*100),avg=P.times.reduce((a,b)=>a+b,0)/P.times.length,extra=P.att-n;
+  const stars=extra===0?3:extra<=2?2:1,practice=P.sc.id==='practice';
+  let note;
+  if(acc>=90&&avg<6)note='Nice pace. Your next scenarios will use longer sign sequences and fewer hints.';
+  else if(acc<60)note='Senyas will keep the next scenarios at the same level and suggest more practice on the signs you missed.';
+  else note='You are on track. Difficulty stays the same until your accuracy and speed rise a little more.';
+  if(!practice){S.done[P.sc.id]=true;S.stars[P.sc.id]=stars;delete S.resume[P.sc.id];}
+  const idx=SCEN.findIndex(s=>s.id===P.sc.id),nx=SCEN[idx+1];
+  modal(`
+   <div style="text-align:center"><h2 class="h1" style="font-size:32px">${practice?'Practice complete':'Mission complete'}</h2>
+   <div class="stars" aria-label="${stars} of 3 stars">${[1,2,3].map(i=>`<span style="opacity:${i<=stars?1:.25}">${ic('star',44,true)}</span>`).join('')}</div>
+   <p class="muted">+${P.pts} points earned</p></div>
+   <div class="statrow"><div class="stat"><b>${acc}%</b><span>Accuracy</span></div><div class="stat"><b>${avg.toFixed(1)}s</b><span>Response time</span></div><div class="stat"><b>${P.att}</b><span>Attempts</span></div></div>
+   <div class="note">${ic('chart',22)}<span><b>Adaptive difficulty.</b> ${note}</span></div>
+   <div class="row" style="margin-top:20px;justify-content:flex-end;flex-wrap:wrap">
+     <button class="btn ghost" data-a="closeExit">${practice?'Back to Learn':'Back to map'}</button>
+     ${!practice&&nx?`<button class="btn primary" data-a="closeOpen" data-id="${nx.id}">Next: ${nx.name}</button>`:''}
+   </div>`,true);
+}
+
+/* ---------- modal ---------- */
+function modal(html,sticky){
+  $('#modal-root').innerHTML=`<div class="mback" ${sticky?'':'data-a="closeModal"'} data-back="1"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;
+  const f=$('#modal-root button');if(f)f.focus();
+}
+function closeModal(){$('#modal-root').innerHTML='';}
+function signModal(id){
+  const s=sg(id),used=SCEN.filter(x=>x.steps.some(t=>t.t===id));
+  modal(`
+   <div class="video"><div class="play">${ic('play',28,true)}</div><small>Placeholder: lecturer demonstration video</small></div>
+   <div class="row" style="justify-content:space-between;align-items:flex-start"><div><h2 class="h1" style="font-size:34px">${s.fil}</h2><p class="muted">${s.en}</p></div><span class="chip">${s.cat}</span></div>
+   <div style="margin:16px 0">${s.m?`<div class="row"><span class="muted" style="font-size:14px">Mastery</span><div class="bar"><i class="${barc(s.m)}" style="width:${s.m}%"></i></div><small style="font-weight:700">${s.m}%</small></div>`:`<span class="chip">Not started</span>`}</div>
+   <p class="muted" style="font-size:14px;margin-bottom:8px">Used in</p>
+   <div class="meta" style="margin:0 0 20px">${used.map(u=>`<span class="chip lv">${u.short}</span>`).join('')||'<span class="muted">No scenarios yet</span>'}</div>
+   <div class="row" style="justify-content:flex-end;flex-wrap:wrap"><button class="btn ghost" data-a="closeModal">Close</button><button class="btn primary" data-a="closePractice" data-id="${id}">${ic('camera',18)} Practice this sign</button></div>`);
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-a]');if(!el)return;
+  if(el.dataset.back&&e.target!==el)return;
+  const d=el.dataset,a=d.a;
+  if(a==='go')go(d.v,null);
+  else if(a==='role'){S.role=d.r;S.viewing=null;go(d.r==='learner'?'home':'class');}
+  else if(a==='unlock'){S.unlockAll=!S.unlockAll;render();}
+  else if(a==='filter'){S.filter=d.c;render();}
+  else if(a==='sign')signModal(d.id);
+  else if(a==='closeModal')closeModal();
+  else if(a==='closePractice'){closeModal();openScenario(null,d.id);}
+  else if(a==='closeOpen'){closeModal();openScenario(d.id);}
+  else if(a==='closeExit'){closeModal();go(P&&P.sc.id==='practice'?'learn':'scenarios');}
+  else if(a==='practice')openScenario(null,d.id);
+  else if(a==='open')openScenario(d.id);
+  else if(a==='exit'){go(P&&P.sc.id==='practice'?'learn':'scenarios');}
+  else if(a==='hint'){P.hint=true;render();}
+  else if(a==='doSign')doSign();
+  else if(a==='demo'){P.demo=d.d;document.querySelectorAll('[data-a="demo"]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.d===P.demo));}
+  else if(a==='retry'){P.phase='idle';P.t0=Date.now();paint();}
+  else if(a==='review'){signModal(P.sc.steps[P.i].t);}
+  else if(a==='next')nextStep();
+  else if(a==='cam')toggleCam();
+  else if(a==='viewLearner')go('progress',d.n);
+  else if(a==='toast')toast(d.t);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&$('#modal-root').firstChild)closeModal();
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('tr.click,.bld[role="button"]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}
+});
+async function toggleCam(){
+  if(CAM){CAM.getTracks().forEach(t=>t.stop());CAM=null;const v=$('#vid');v.hidden=true;v.srcObject=null;$('#camBtn').textContent='Use my camera';return;}
+  try{
+    CAM=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
+    const v=$('#vid');v.srcObject=CAM;v.hidden=false;$('#camBtn').textContent='Turn camera off';
+    toast('Camera on. Recognition is still simulated in this prototype.');
+  }catch(err){CAM=null;toast('Camera is not available here. Staying in demo mode.');}
+}
+render();
+
+</script>
+</body>
+</html>
+
