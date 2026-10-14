@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,287 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#EEF1FA;--surface:#FFFFFF;--surface2:#E5EAF8;--ink:#171B3A;--muted:#596083;--line:#D2D9EE;
-  --primary:#2848F5;--onprimary:#FFFFFF;--primary-soft:#DCE3FF;--hero:#2848F5;
-  --sun:#FFC53D;--onsun:#3F2C00;--ok:#0E8F6E;--ok-bg:#D7F2E8;--bad:#C93038;--bad-bg:#FCE2E3;--warn-bg:#FFF0C7;
-  --fd:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
-  --fb:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
-  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#0E1125;--surface:#171B38;--surface2:#212650;--ink:#EDF0FF;--muted:#A0A8D2;--line:#2B3161;
-    --primary:#7189FF;--onprimary:#0E1125;--primary-soft:#232C6B;--hero:#3450F0;
-    --sun:#FFCB4D;--ok:#41D6AB;--ok-bg:#12382F;--bad:#FF8087;--bad-bg:#40202A;--warn-bg:#3D3315;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0E1125;--surface:#171B38;--surface2:#212650;--ink:#EDF0FF;--muted:#A0A8D2;--line:#2B3161;
-  --primary:#7189FF;--onprimary:#0E1125;--primary-soft:#232C6B;--hero:#3450F0;
-  --sun:#FFCB4D;--ok:#41D6AB;--ok-bg:#12382F;--bad:#FF8087;--bad-bg:#40202A;--warn-bg:#3D3315;
-}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*,*::before,*::after{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
-button{font:inherit;color:inherit;cursor:pointer}
-h1,h2,h3,p{margin:0}
-:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
-.ic{flex:none;vertical-align:middle}
-
-/* layout */
-.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
-.rail{position:sticky;top:0;height:100vh;padding:22px 14px;display:flex;flex-direction:column;gap:6px;background:var(--surface);border-right:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:10px;padding:4px 10px 18px}
-.brand .mark{width:38px;height:38px;border-radius:12px;background:var(--primary);color:var(--onprimary);display:grid;place-items:center}
-.brand b{font-family:var(--fd);font-weight:800;font-size:22px;letter-spacing:-.02em}
-.brand small{display:block;font-size:12px;color:var(--muted);margin-top:-3px}
-.navbtn{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border:0;border-radius:12px;background:none;font-weight:600;color:var(--muted);text-align:left}
-.navbtn:hover{background:var(--surface2);color:var(--ink)}
-.navbtn[aria-current="page"]{background:var(--primary-soft);color:var(--primary)}
-.rail .sp{flex:1}
-.seg{display:flex;background:var(--surface2);border-radius:12px;padding:4px;gap:4px}
-.seg button{flex:1;border:0;background:none;border-radius:9px;padding:8px 10px;font-weight:600;font-size:14px;color:var(--muted)}
-.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
-.linkbtn{background:none;border:0;color:var(--muted);font-size:13px;text-decoration:underline;padding:8px 6px;text-align:left}
-main{padding:34px clamp(16px,4vw,52px) 60px;max-width:1160px;width:100%}
-.tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
-.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;padding:6px 2px;font-size:12px;font-weight:600;color:var(--muted);border-radius:10px}
-.tabbar button[aria-current="page"]{color:var(--primary)}
-@media (max-width:860px){
-  .app{grid-template-columns:1fr}.rail{display:none}.tabbar{display:flex}
-  main{padding-bottom:110px}
-}
-
-/* type + bits */
-.h1{font-family:var(--fd);font-weight:800;font-size:clamp(28px,4.2vw,42px);line-height:1.08;letter-spacing:-.025em}
-.h2{font-family:var(--fd);font-weight:800;font-size:22px;letter-spacing:-.015em}
-.h3{font-weight:700;font-size:17px}
-.muted{color:var(--muted)}
-.sub{color:var(--muted);margin-top:6px;max-width:60ch}
-.pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:26px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:12px 20px;font-weight:700;font-size:15px;background:var(--surface2);color:var(--ink);text-decoration:none}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn.primary{background:var(--primary);color:var(--onprimary)}
-.btn.sun{background:var(--sun);color:var(--onsun)}
-.btn.ghost{background:none;border:1.5px solid var(--line)}
-.btn.sm{padding:8px 14px;font-size:14px;border-radius:12px}
-.btn.big{padding:17px 30px;font-size:18px;border-radius:20px}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600;background:var(--surface2);color:var(--ink)}
-.chip.lv{background:var(--primary-soft);color:var(--primary)}
-.chip.ok{background:var(--ok-bg);color:var(--ok)}
-.chip.warn{background:var(--warn-bg);color:var(--ink)}
-.chip.bad{background:var(--bad-bg);color:var(--bad)}
-.bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;flex:1}
-.bar i{display:block;height:100%;border-radius:99px;background:var(--primary)}
-.bar i.ok{background:var(--ok)}.bar i.bad{background:var(--bad)}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px}
-.grid2{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:20px}
-@media (max-width:900px){.grid2{grid-template-columns:1fr}}
-.stack{display:flex;flex-direction:column;gap:20px}
-.pill-stats{display:flex;gap:10px;flex-wrap:wrap}
-.pill-stats .chip{padding:8px 14px;font-size:15px;background:var(--surface);border:1px solid var(--line)}
-
-/* home */
-.continue{position:relative;overflow:hidden;background:var(--hero);color:#fff;border-radius:30px;padding:30px;min-height:250px;display:flex;flex-direction:column;justify-content:space-between;gap:24px}
-.continue .h2{font-size:30px}
-.continue p{color:rgba(255,255,255,.82);max-width:34ch;margin-top:6px}
-.continue .ghosthand{position:absolute;right:-10px;top:10px;width:46%;height:120%;opacity:.28;pointer-events:none}
-.ghosthand line,.ghosthand circle{stroke:#fff;fill:#fff}
-.ghosthand line{stroke-width:1.4;stroke-linecap:round}
-.dots{display:flex;gap:6px;margin-top:14px}
-.dots i{width:28px;height:6px;border-radius:9px;background:rgba(255,255,255,.35)}
-.dots i.on{background:#fff}
-.ladder{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column}
-.ladder li{position:relative;display:flex;gap:14px;padding:0 0 18px 0}
-.ladder li:last-child{padding-bottom:0}
-.ladder li::before{content:"";position:absolute;left:15px;top:32px;bottom:0;width:2px;background:var(--line)}
-.ladder li:last-child::before{display:none}
-.ladder .n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;background:var(--surface2);color:var(--muted);flex:none}
-.ladder .done .n{background:var(--ok);color:#fff}
-.ladder .cur .n{background:var(--primary);color:var(--onprimary);box-shadow:0 0 0 5px var(--primary-soft)}
-.ladder b{display:block;font-size:15px}.ladder span{font-size:13px;color:var(--muted)}
-.ladder .todo b{color:var(--muted)}
-.check{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
-.check:first-of-type{border-top:0}
-.check .box{width:24px;height:24px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:#fff}
-.check.done .box{background:var(--ok);border-color:var(--ok)}
-.check .grow{flex:1;min-width:0}
-.check small{color:var(--muted)}
-.reward{font-weight:700;color:var(--onsun);background:var(--sun);border-radius:99px;padding:2px 10px;font-size:13px}
-.review{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
-.review:first-of-type{border-top:0}
-
-/* scenarios path */
-.path{position:relative;display:flex;flex-direction:column;gap:18px}
-.stop{position:relative;display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px}
-.stop::before{content:"";position:absolute;left:21px;top:44px;bottom:-18px;width:2px;background:var(--line)}
-.stop:last-child::before{display:none}
-.node{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);color:var(--muted);z-index:1}
-.stop.done .node{background:var(--ok);color:#fff}
-.stop.cur .node{background:var(--primary);color:var(--onprimary);box-shadow:0 0 0 6px var(--primary-soft)}
-.scard{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px 22px;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}
-.stop.cur .scard{border:2px solid var(--primary)}
-.stop.lock .scard{background:transparent;border-style:dashed}
-.stop.lock h3{color:var(--muted)}
-.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-
-/* learn */
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.filters button{border:1.5px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 16px;font-weight:600;font-size:14px}
-.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.signs{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
-.sign{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:0;overflow:hidden;display:flex;flex-direction:column}
-.sign:hover{border-color:var(--primary)}
-.sign .pic{height:104px;background:var(--surface2);display:grid;place-items:center;position:relative}
-.sign .pic svg{width:74px;height:74px}
-.sign .pic line,.sign .pic circle{stroke:var(--primary);fill:var(--primary)}
-.sign .pic line{stroke-width:1.6;stroke-linecap:round}
-.sign .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px}
-.sign .fil{font-family:var(--fd);font-weight:800;font-size:22px;letter-spacing:-.01em;line-height:1}
-.row{display:flex;align-items:center;gap:10px}
-.row small{font-weight:700;font-size:13px;min-width:38px;text-align:right}
-
-/* modal */
-.mback{position:fixed;inset:0;z-index:50;background:rgba(10,13,35,.6);display:grid;place-items:center;padding:16px;overflow:auto}
-.modal{background:var(--surface);border-radius:28px;width:min(560px,100%);padding:24px;max-height:calc(100vh - 32px);overflow:auto}
-.video{aspect-ratio:16/9;border-radius:18px;background:radial-gradient(100% 100% at 30% 10%,#2c3577,#12152f);display:grid;place-items:center;color:#fff;position:relative;margin-bottom:18px}
-.video .play{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center}
-.video small{position:absolute;bottom:10px;left:14px;opacity:.75;font-size:12px}
-.stars{display:flex;gap:6px;justify-content:center;color:var(--sun);margin:8px 0 4px}
-.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
-.stat{background:var(--surface2);border-radius:16px;padding:12px;text-align:center}
-.stat b{display:block;font-family:var(--fd);font-size:24px;font-weight:800;line-height:1.1}
-.stat span{font-size:13px;color:var(--muted)}
-.note{background:var(--primary-soft);border-radius:16px;padding:14px 16px;font-size:15px;display:flex;gap:12px}
-.note .ic{color:var(--primary);margin-top:2px}
-
-/* play */
-.crumb{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.playgrid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:22px;align-items:start}
-@media (max-width:900px){.playgrid{grid-template-columns:1fr}.playgrid .cam{order:-1}}
-.bubble{position:relative;background:var(--surface2);border-radius:20px 20px 20px 6px;padding:14px 18px;margin-top:4px}
-.bubble b{font-family:var(--fd);font-size:22px;font-weight:800;letter-spacing:-.01em}
-.npc{display:flex;gap:14px;align-items:flex-start}
-.avatar{width:48px;height:48px;border-radius:50%;background:var(--sun);color:var(--onsun);display:grid;place-items:center;font-family:var(--fd);font-weight:800;font-size:20px;flex:none}
-.objective{border-left:5px solid var(--primary);padding:4px 0 4px 16px}
-.objective .h2{margin-top:2px}
-.fb{border-radius:18px;padding:16px 18px;background:var(--surface2)}
-.fb.ok{background:var(--ok-bg)}.fb.bad{background:var(--bad-bg)}.fb.warn{background:var(--warn-bg)}
-.fb b.t{font-family:var(--fd);font-size:20px;font-weight:800;display:block;margin-bottom:4px}
-.fb .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.stage{position:relative;aspect-ratio:4/3;border-radius:30px;overflow:hidden;background:radial-gradient(120% 90% at 30% 8%,#2b3374 0%,#151936 58%,#0D1028 100%);color:#fff}
-.stage .bust{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
-.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
-.stage .corner{position:absolute;width:34px;height:34px;border:4px solid rgba(255,255,255,.75);border-radius:6px}
-.corner.a{top:14px;left:14px;border-right:0;border-bottom:0}.corner.b{top:14px;right:14px;border-left:0;border-bottom:0}
-.corner.c{bottom:14px;left:14px;border-right:0;border-top:0}.corner.d{bottom:14px;right:14px;border-left:0;border-top:0}
-svg.hand{position:absolute;left:22%;top:9%;width:56%;height:82%}
-svg.hand line{stroke:#7FE3FF;stroke-width:1.3;stroke-linecap:round}
-svg.hand circle{fill:#fff;stroke:#7FE3FF;stroke-width:.6}
-svg.hand{opacity:.55;transition:opacity .2s}
-.stage.rec svg.hand,.stage.res svg.hand{opacity:1}
-.stage.okc svg.hand line{stroke:#5BF0BF}.stage.okc svg.hand circle{stroke:#5BF0BF}
-.stage.badc svg.hand line{stroke:#FF8F94}.stage.badc svg.hand circle{stroke:#FF8F94}
-.stage.badc svg.hand{opacity:.8}
-.status{position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:rgba(10,12,32,.72);backdrop-filter:blur(6px);padding:7px 14px;border-radius:99px;font-weight:600;font-size:14px;white-space:nowrap}
-.status i{width:9px;height:9px;border-radius:50%;background:#5BF0BF}
-.status.rec i{background:#FF5B62;animation:blink .8s infinite}
-@keyframes blink{50%{opacity:.25}}
-.count{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--fd);font-weight:800;font-size:clamp(90px,16vw,150px);text-shadow:0 4px 30px rgba(0,0,0,.5)}
-.count span{animation:pop .65s ease-out}
-@keyframes pop{from{transform:scale(1.5);opacity:0}to{transform:scale(1);opacity:1}}
-.timer{position:absolute;left:24px;right:24px;bottom:24px;height:8px;background:rgba(255,255,255,.2);border-radius:9px;overflow:hidden}
-.timer i{display:block;height:100%;background:#FF5B62;animation:fill 1.3s linear forwards}
-@keyframes fill{from{width:0}to{width:100%}}
-.spin{position:absolute;bottom:26px;left:50%;width:26px;height:26px;margin-left:-13px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite}
-@keyframes rot{to{transform:rotate(360deg)}}
-.controls{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:16px}
-.demo{margin-top:16px;background:var(--surface);border:1px dashed var(--line);border-radius:16px;padding:12px 14px}
-.demo p{font-size:13px;color:var(--muted);margin-bottom:8px}
-
-
-/* AR stage */
-.stage{aspect-ratio:16/10;touch-action:pan-y}
-@media (max-width:860px){.stage{aspect-ratio:4/3}}
-.stage .bust{opacity:.28}
-.stage .corner{display:none}
-#arc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-svg.hand{left:11%;top:29%;width:42%;height:56%}
-.zone{position:absolute;left:8%;top:27%;width:48%;height:62%;border:2px dashed rgba(127,227,255,.45);border-radius:26px;pointer-events:none}
-.zone span{position:absolute;top:-11px;left:18px;background:#131735;color:#7FE3FF;font-size:12px;font-weight:600;padding:1px 10px;border-radius:99px}
-.hud{position:absolute;top:14px;left:16px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;max-width:62%}
-.hrow{display:flex;gap:8px;flex-wrap:wrap}
-.chip-ar{display:inline-flex;align-items:center;gap:6px;background:rgba(10,12,32,.72);backdrop-filter:blur(6px);padding:6px 12px;border-radius:99px;font-weight:700;font-size:14px}
-.tag-ar{font-size:12px;color:#7FE3FF;background:rgba(10,12,32,.7);padding:2px 10px;border-radius:99px}
-.arbubble{position:absolute;left:0;top:0;max-width:40%;background:#fff;color:#171B3A;border-radius:16px 16px 16px 6px;padding:9px 14px;box-shadow:0 6px 24px rgba(0,0,0,.35);will-change:transform;opacity:0}
-.arbubble.on{opacity:1}
-.arbubble::after{content:"";position:absolute;left:calc(var(--tx,60px) - 8px);bottom:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0}
-.arbubble small{display:block;font-size:12px;color:#5B6182;font-weight:600}
-.arbubble b{font-family:var(--fd);font-weight:800;font-size:clamp(13px,1.5vw,17px);line-height:1.2}
-.objbar{position:absolute;left:14px;bottom:16px;max-width:52%;padding:8px 14px 9px;background:rgba(10,12,32,.78);backdrop-filter:blur(6px);border-radius:14px;display:flex;flex-direction:column;gap:1px}
-.objbar span{font-size:12px;opacity:.75}
-.objbar b{font-family:var(--fd);font-size:clamp(15px,2vw,20px);font-weight:800;line-height:1.2}
-.status{top:14px;bottom:auto;left:auto;right:16px;transform:none}
-.timer{left:0;right:0;bottom:0;height:6px;border-radius:0}
-.hint3d{position:absolute;right:16px;bottom:14px;font-size:12px;color:rgba(255,255,255,.7);background:rgba(10,12,32,.55);padding:3px 10px;border-radius:99px}
-@media (max-width:860px){.tag-ar,.stepc,.hint3d{display:none}.arbubble{max-width:52%;padding:7px 10px}.status{font-size:12px;padding:5px 10px}.objbar{max-width:60%}}
-
-/* town map */
-.town{width:100%;height:auto;display:block}
-.zn{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
-.zt{fill:var(--muted);font-size:12px;font-family:var(--fb)}
-.zh{fill:var(--ink);font-size:15px;font-weight:700;font-family:var(--fb)}
-.bld{cursor:pointer;outline:none}
-.bld circle.b{fill:var(--surface2);stroke:var(--line);stroke-width:2}
-.bld.done circle.b{fill:var(--ok-bg);stroke:var(--ok)}
-.bld.cur circle.b{fill:var(--primary-soft);stroke:var(--primary);stroke-width:3}
-.bld.lock{cursor:not-allowed}
-.bld.lock circle.b{fill:none;stroke-dasharray:5 4}
-.bld text{fill:var(--ink);font-family:var(--fb)}
-.bld .nm{font-weight:700;font-size:12.5px}
-.bld .st{font-size:11.5px;fill:var(--muted)}
-.bld .ico{color:var(--primary)}.bld.done .ico{color:var(--ok)}.bld.lock .ico{color:var(--muted)}
-.bld[role="button"]:hover circle.b,.bld[role="button"]:focus-visible circle.b{stroke:var(--primary);stroke-width:3}
-.pulse-ring{animation:ring 1.6s ease-out infinite;transform-box:fill-box;transform-origin:center;pointer-events:none}
-@keyframes ring{from{transform:scale(1);opacity:.7}to{transform:scale(1.5);opacity:0}}
-.lvhead{display:flex;align-items:baseline;gap:10px;margin:28px 0 12px;flex-wrap:wrap}
-.lvhead p{color:var(--muted);font-size:14px}
-
-/* progress */
-.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-@media (max-width:760px){.tiles{grid-template-columns:repeat(2,1fr)}}
-.tile{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px}
-.tile b{display:block;font-family:var(--fd);font-size:32px;font-weight:800;line-height:1.1;letter-spacing:-.02em}
-.tile span{font-size:14px;color:var(--muted)}
-.tile.hi{background:var(--primary);border-color:var(--primary);color:var(--onprimary)}
-.tile.hi span{color:inherit;opacity:.85}
-.chart{width:100%;height:auto;display:block}
-.chart text{fill:var(--muted);font-size:12px;font-family:var(--fb)}
-.mrow{display:grid;grid-template-columns:110px 1fr 44px;gap:12px;align-items:center;padding:7px 0;font-size:15px}
-.mrow small{font-weight:700;text-align:right}
-
-/* badges */
-.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
-.badge{border-radius:22px;padding:20px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:10px}
-.badge .medal{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:var(--sun);color:var(--onsun)}
-.badge.off{background:transparent;border-style:dashed}
-.badge.off .medal{background:var(--surface2);color:var(--muted)}
-
-/* instructor */
-.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:22px;background:var(--surface)}
-table{border-collapse:collapse;width:100%;min-width:640px}
-th{text-align:left;font-size:14px;color:var(--muted);font-weight:600;padding:14px 16px;border-bottom:1px solid var(--line)}
-td{padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px}
-tr:last-child td{border-bottom:0}
-td .row{min-width:120px}
-tr.click{cursor:pointer}tr.click:hover td{background:var(--surface2)}
-
-#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;font-size:15px;z-index:80;max-width:calc(100vw - 32px);opacity:0;pointer-events:none;transition:opacity .2s}
-#toast.show{opacity:1}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style>
+<link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 <div class="app">
@@ -483,6 +201,112 @@ const doneCount=()=>SCEN.filter(s=>S.done[s.id]).length;
 /* ---------- navigation ---------- */
 const NAV_L=[['home','Home','home'],['learn','Learn','book'],['scenarios','Map','pin'],['progress','Progress','chart'],['badges','Badges','trophy']];
 const NAV_I=[['class','Class overview','users']];
+function drawCameraOverlay(g, W, H) {
+  // 1) Push one MediaPipe detection per frame (only when frame advanced)
+  if (MP.ready && CAM) {
+    const video = document.getElementById('vid');
+    if (video && video.readyState >= 2 && video.currentTime !== MP.lastVideoTime) {
+      MP.lastVideoTime = video.currentTime;
+      try {
+        MP.results = MP.landmarker.detectForVideo(video, performance.now());
+      } catch (err) {
+        /* swallow occasional WASM hiccups */
+      }
+    }
+    if (MP.results?.landmarks) {
+      for (const lms of MP.results.landmarks) {
+        drawHandSkeleton(g, lms, W, H);
+      }
+    }
+  }
+
+  // 2) Draw YOLO boxes
+  if (YOLO.detections.length) {
+    g.save();
+    g.font = '700 13px Figtree, system-ui, sans-serif';
+    g.textBaseline = 'middle';
+
+    for (const d of YOLO.detections) {
+      // --- Normalize whatever shape your Flask returns. ---
+      // Case A: normalized 0-1 with x/y/w/h
+      // Case B: normalized 0-1 with xmin/ymin/xmax/ymax
+      let x, y, w, h;
+      if (d.x != null && d.w != null) {
+        x = d.x * W; y = d.y * H; w = d.w * W; h = d.h * H;
+      } else if (d.xmin != null) {
+        x = d.xmin * W; y = d.ymin * H;
+        w = (d.xmax - d.xmin) * W; h = (d.ymax - d.ymin) * H;
+      } else {
+        continue; // unknown shape, skip
+      }
+      x = W - x - w;
+
+      const label = d.label || d.class || d.name || 'object';
+      const conf  = d.confidence ?? d.conf ?? d.score ?? 0;
+
+      // Box
+      g.strokeStyle = '#7FE3FF';
+      g.fillStyle   = 'rgba(127,227,255,0.14)';
+      g.lineWidth   = 2;
+      g.fillRect(x, y, w, h);
+      g.strokeRect(x, y, w, h);
+
+      // Label pill
+      const text = `${label} ${Math.round(conf * 100)}%`;
+      const tw = g.measureText(text).width + 12;
+      g.fillStyle = '#7FE3FF';
+      g.fillRect(x, Math.max(0, y - 20), tw, 20);
+      g.fillStyle = '#0A0C20';
+      g.fillText(text, x + 6, Math.max(10, y - 10));
+    }
+    g.restore();
+  }
+}
+
+function drawHandSkeleton(g, landmarks, W, H) {
+  g.save();
+  g.strokeStyle = '#FF4D6D';
+  g.lineWidth = 3;
+  g.lineCap = 'round';
+
+  for (const [i, j] of CONN) {
+    const a = landmarks[i], b = landmarks[j];
+    if (!a || !b) continue;
+    g.beginPath();
+    g.moveTo((1 - a.x) * W, a.y * H);
+    g.lineTo((1 - b.x) * W, b.y * H);
+    g.stroke();
+  }
+
+  g.fillStyle = '#FFFFFF';
+  g.strokeStyle = '#FF4D6D';
+  g.lineWidth = 2;
+  for (let i = 0; i < landmarks.length; i++) {
+    const p = landmarks[i];
+    const r = TIPS.includes(i) ? 6 : 4;
+    g.beginPath();
+    g.arc((1 - p.x) * W, p.y * H, r, 0, Math.PI * 2);
+    g.fill();
+    g.stroke();
+  }
+  g.restore();
+}
+function updateDetectedText() {
+  const el = document.getElementById('detected');
+  if (!el) return;
+
+  if (!YOLO.detections.length) {
+    el.classList.remove('on');
+    return;
+  }
+
+  el.textContent = YOLO.detections.map(d => {
+    const label = d.label || d.class || d.name || 'object';
+    const conf  = d.confidence ?? d.conf ?? d.score ?? 0;
+    return `${label}  ${Math.round(conf * 100)}%`;
+  }).join('\n');
+  el.classList.add('on');
+}
 function renderNav(){
   const items=S.role==='learner'?NAV_L:NAV_I;
   const cur=S.view==='play'?'scenarios':S.view;
@@ -916,6 +740,7 @@ function arFrame(now){
     g.fillStyle=ok?'#fff':'#3F2C00';g.font=`800 ${br*1.3}px Figtree,system-ui,sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(ok?'\u2713':'?',bx,by+1);
   }
   const bub=$('#bubble');
+  drawCameraOverlay(g, W, H);
   if(bub&&AR.head){
     const bw=bub.offsetWidth,bh=bub.offsetHeight,hx=AR.head[0],hr=AR.head[2];
     let left=Math.max(8,Math.min(W-bw-8,hx-bw+44));
@@ -937,10 +762,13 @@ function playV(){
       <svg class="bust" viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="200" cy="120" r="46" fill="#3a4390"/><path d="M90 300c0-70 50-110 110-110s110 40 110 110z" fill="#3a4390"/></svg>
       <video id="vid" autoplay muted playsinline hidden></video>
       <canvas id="arc" aria-hidden="true"></canvas>
+      <canvas id="overlay" aria-hidden="true"></canvas>
       <div class="zone"><span>Sign here</span></div>
       ${handLive()}
       <div class="hud"><div class="hrow"><span class="chip-ar">${ic('pin',14)} ${P.sc.name}</span><span class="chip-ar stepc">Step ${P.i+1} of ${n}</span></div><span class="tag-ar">Scene anchored to your space</span></div>
       <div class="arbubble" id="bubble"></div>
+      <div class="detected" id="detected"></div>
+      <div class="status" id="status"></div>
       <div class="status" id="status"></div>
       <div id="over"></div>
       <div class="objbar"><span>Objective</span><b>${st.obj}</b></div>
@@ -977,12 +805,38 @@ function afterPlay(){
   HAND_T=setInterval(tickHand,110);
   arInit();paint();
 }
-function tickHand(){
-  const h=$('#hand');if(!h||!P)return;
-  const j=P.phase==='record'?1.4:P.phase==='result'||P.phase==='recognize'?0:.5;
-  const p=LM.map(q=>[q[0]+(Math.random()-.5)*j,q[1]+(Math.random()-.5)*j]);
-  h.querySelectorAll('line').forEach(l=>{const a=p[+l.dataset.a],b=p[+l.dataset.b];l.setAttribute('x1',a[0]);l.setAttribute('y1',a[1]);l.setAttribute('x2',b[0]);l.setAttribute('y2',b[1]);});
-  h.querySelectorAll('circle').forEach(c=>{const q=p[+c.dataset.i];c.setAttribute('cx',q[0]);c.setAttribute('cy',q[1]);});
+function tickHand() {
+  const h = document.getElementById('hand');
+  if (!h || !P) return;
+  if (MP.ready && CAM && MP.results && MP.results.landmarks?.length) {
+    const lms = MP.results.landmarks[0];
+    const pts = lms.map(p => [(1 - p.x) * 100, p.y * 100]);
+    updateHandSvg(h, pts);
+    return;
+  }
+
+  const j =
+    P.phase === 'record' ? 1.4 :
+    P.phase === 'result' || P.phase === 'recognize' ? 0 : 0.5;
+  const p = LM.map(q => [
+    q[0] + (Math.random() - 0.5) * j,
+    q[1] + (Math.random() - 0.5) * j,
+  ]);
+  updateHandSvg(h, p);
+}
+
+function updateHandSvg(h, p) {
+  h.querySelectorAll('line').forEach(l => {
+    const a = p[+l.dataset.a], b = p[+l.dataset.b];
+    if (!a || !b) return;
+    l.setAttribute('x1', a[0]); l.setAttribute('y1', a[1]);
+    l.setAttribute('x2', b[0]); l.setAttribute('y2', b[1]);
+  });
+  h.querySelectorAll('circle').forEach(c => {
+    const q = p[+c.dataset.i];
+    if (!q) return;
+    c.setAttribute('cx', q[0]); c.setAttribute('cy', q[1]);
+  });
 }
 function paint(){
   const st=$('#stage');if(!st)return;
@@ -1115,17 +969,228 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&$('#modal-root').firstChild)closeModal();
   if((e.key==='Enter'||e.key===' ')&&e.target.matches('tr.click,.bld[role="button"]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}
 });
-async function toggleCam(){
-  if(CAM){CAM.getTracks().forEach(t=>t.stop());CAM=null;const v=$('#vid');v.hidden=true;v.srcObject=null;$('#camBtn').textContent='Use my camera';return;}
-  try{
-    CAM=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
-    const v=$('#vid');v.srcObject=CAM;v.hidden=false;$('#camBtn').textContent='Turn camera off';
-    toast('Camera on. Recognition is still simulated in this prototype.');
-  }catch(err){CAM=null;toast('Camera is not available here. Staying in demo mode.');}
+/* ---------- YOLO object detection ---------- */
+const YOLO = {
+  running: false,
+  busy: false,
+  detections: [],
+  intervalMs: 250,
+};
+/* ---------- MediaPipe hand landmarker ---------- */
+const MP = { landmarker: null, ready: false, lastVideoTime: -1, results: null };
+
+async function initMediaPipe() {
+  if (MP.ready || MP.landmarker) return;
+  try {
+    const { HandLandmarker, FilesetResolver } = await import(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12'
+    );
+
+    const vision = await FilesetResolver.forVisionTasks(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/wasm'
+    );
+
+    MP.landmarker = await HandLandmarker.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath:
+          'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',
+        delegate: 'GPU',
+      },
+      runningMode: 'VIDEO',
+      numHands: 2,
+    });
+
+    MP.ready = true;
+    console.log('[MediaPipe] Hand Landmarker ready');
+  } catch (err) {
+    console.warn('[MediaPipe] init failed:', err);
+  }
+}
+
+// Kick off model download immediately so it's ready when the user hits the camera.
+initMediaPipe();
+function startObjectDetection() {
+  if (YOLO.running) return;
+  YOLO.running = true;
+  console.log('[YOLO] detection loop started');
+  yoloLoop();
+}
+
+function stopObjectDetection() {
+  YOLO.running = false;
+  YOLO.busy = false;
+  YOLO.detections = [];
+  console.log('[YOLO] detection loop stopped');
+}
+
+async function yoloLoop() {
+  if (!YOLO.running) return;
+
+  const video = document.getElementById('vid');
+
+  if (CAM && video && video.readyState >= 2 && !YOLO.busy) {
+    YOLO.busy = true;
+    try {
+      // 1. Grab current video frame into a temp canvas
+      const tmp = document.createElement('canvas');
+      tmp.width = video.videoWidth || 640;
+      tmp.height = video.videoHeight || 480;
+      tmp.getContext('2d').drawImage(video, 0, 0, tmp.width, tmp.height);
+
+      // 2. Convert to a Blob (JPEG) — this is what Flask reads via request.files
+      const blob = await new Promise(res =>
+        tmp.toBlob(res, 'image/jpeg', 0.6)
+      );
+
+      // 3. Send as multipart/form-data with field name "image"
+      const form = new FormData();
+      form.append('image', blob, 'frame.jpg');
+
+      const res = await fetch('/detect', {
+        method: 'POST',
+        body: form,          // ← no Content-Type header; browser sets it
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log('[YOLO] response:', data);
+        YOLO.detections = data.detections || [];
+        updateDetectedText();
+      } else {
+        console.warn('[YOLO] server returned', res.status);
+      }
+    } catch (err) {
+      console.warn('[YOLO] fetch failed:', err);
+    } finally {
+      YOLO.busy = false;
+    }
+  }
+
+  setTimeout(yoloLoop, YOLO.intervalMs);
+}
+function stopCamera() {
+  // Stop the detection loop first.
+  if (typeof stopObjectDetection === 'function') {
+    stopObjectDetection();
+  }
+
+  const video = document.getElementById('vid');
+
+  // Stop the stream even if CAM and video.srcObject got out of sync.
+  const stream = CAM || (video && video.srcObject);
+
+  if (stream && typeof stream.getTracks === 'function') {
+    stream.getTracks().forEach(track => track.stop());
+  }
+
+  CAM = null;
+
+  if (video) {
+    video.pause();
+    video.srcObject = null;
+    video.hidden = true;
+  }
+
+  const button = document.getElementById('camBtn');
+
+  if (button) {
+    button.textContent = 'Use my camera';
+  }
+
+  console.log('Camera stopped.');
+}
+
+async function toggleCam() {
+  if (CAM || document.getElementById('vid')?.srcObject) {
+    stopCamera();
+    return;
+  }
+
+  const button = document.getElementById('camBtn');
+  const video = document.getElementById('vid');
+
+  if (!video) {
+    console.error('Camera video element #vid was not found.');
+    toast('Camera element not found.');
+    return;
+  }
+
+  if (!navigator.mediaDevices?.getUserMedia) {
+    toast('Camera access requires localhost or HTTPS.');
+    return;
+  }
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Starting camera...';
+  }
+
+  let stream = null;
+
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: 'user',
+        width: { ideal: 640 },
+        height: { ideal: 480 }
+      },
+      audio: false
+    });
+
+    // Attach the stream only after camera permission succeeds.
+    CAM = stream;
+    video.srcObject = stream;
+    video.hidden = false;
+
+    await video.play();
+
+    if (button) {
+      button.textContent = 'Turn camera off';
+    }
+
+    console.log(
+      'Camera started:',
+      video.videoWidth,
+      'x',
+      video.videoHeight
+    );
+
+    // Start YOLO only after the video is playing.
+    if (typeof startObjectDetection === 'function') {
+      startObjectDetection();
+    }
+
+    toast('Camera on.');
+  } catch (error) {
+    console.error('Camera startup error:', error);
+
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+
+    CAM = null;
+    video.pause();
+    video.srcObject = null;
+    video.hidden = true;
+
+    toast('Could not start the camera. Check the console.');
+  } finally {
+    if (button) {
+      button.disabled = false;
+
+      if (!CAM) {
+        button.textContent = 'Use my camera';
+      }
+    }
+  }
 }
 render();
-
+window.addEventListener('beforeunload', () => {
+  stopObjectDetection();
+  if (CAM) {
+    CAM.getTracks().forEach(track => track.stop());
+  }
+});
 </script>
 </body>
 </html>
-
