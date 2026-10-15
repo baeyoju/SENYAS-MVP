@@ -202,7 +202,6 @@ const doneCount=()=>SCEN.filter(s=>S.done[s.id]).length;
 const NAV_L=[['home','Home','home'],['learn','Learn','book'],['scenarios','Map','pin'],['progress','Progress','chart'],['badges','Badges','trophy']];
 const NAV_I=[['class','Class overview','users']];
 function drawCameraOverlay(g, W, H) {
-  // 1) Push one MediaPipe detection per frame (only when frame advanced)
   if (MP.ready && CAM) {
     const video = document.getElementById('vid');
     if (video && video.readyState >= 2 && video.currentTime !== MP.lastVideoTime) {
@@ -220,16 +219,12 @@ function drawCameraOverlay(g, W, H) {
     }
   }
 
-  // 2) Draw YOLO boxes
   if (YOLO.detections.length) {
     g.save();
     g.font = '700 13px Figtree, system-ui, sans-serif';
     g.textBaseline = 'middle';
 
     for (const d of YOLO.detections) {
-      // --- Normalize whatever shape your Flask returns. ---
-      // Case A: normalized 0-1 with x/y/w/h
-      // Case B: normalized 0-1 with xmin/ymin/xmax/ymax
       let x, y, w, h;
       if (d.x != null && d.w != null) {
         x = d.x * W; y = d.y * H; w = d.w * W; h = d.h * H;
@@ -237,21 +232,19 @@ function drawCameraOverlay(g, W, H) {
         x = d.xmin * W; y = d.ymin * H;
         w = (d.xmax - d.xmin) * W; h = (d.ymax - d.ymin) * H;
       } else {
-        continue; // unknown shape, skip
+        continue;
       }
       x = W - x - w;
 
       const label = d.label || d.class || d.name || 'object';
       const conf  = d.confidence ?? d.conf ?? d.score ?? 0;
 
-      // Box
       g.strokeStyle = '#7FE3FF';
       g.fillStyle   = 'rgba(127,227,255,0.14)';
       g.lineWidth   = 2;
       g.fillRect(x, y, w, h);
       g.strokeRect(x, y, w, h);
 
-      // Label pill
       const text = `${label} ${Math.round(conf * 100)}%`;
       const tw = g.measureText(text).width + 12;
       g.fillStyle = '#7FE3FF';
@@ -1006,8 +999,6 @@ async function initMediaPipe() {
     console.warn('[MediaPipe] init failed:', err);
   }
 }
-
-// Kick off model download immediately so it's ready when the user hits the camera.
 initMediaPipe();
 function startObjectDetection() {
   if (YOLO.running) return;
@@ -1031,24 +1022,20 @@ async function yoloLoop() {
   if (CAM && video && video.readyState >= 2 && !YOLO.busy) {
     YOLO.busy = true;
     try {
-      // 1. Grab current video frame into a temp canvas
       const tmp = document.createElement('canvas');
       tmp.width = video.videoWidth || 640;
       tmp.height = video.videoHeight || 480;
       tmp.getContext('2d').drawImage(video, 0, 0, tmp.width, tmp.height);
-
-      // 2. Convert to a Blob (JPEG) — this is what Flask reads via request.files
       const blob = await new Promise(res =>
         tmp.toBlob(res, 'image/jpeg', 0.6)
       );
 
-      // 3. Send as multipart/form-data with field name "image"
       const form = new FormData();
       form.append('image', blob, 'frame.jpg');
 
       const res = await fetch('/detect', {
         method: 'POST',
-        body: form,          // ← no Content-Type header; browser sets it
+        body: form,
       });
 
       if (res.ok) {
@@ -1069,14 +1056,11 @@ async function yoloLoop() {
   setTimeout(yoloLoop, YOLO.intervalMs);
 }
 function stopCamera() {
-  // Stop the detection loop first.
   if (typeof stopObjectDetection === 'function') {
     stopObjectDetection();
   }
 
   const video = document.getElementById('vid');
-
-  // Stop the stream even if CAM and video.srcObject got out of sync.
   const stream = CAM || (video && video.srcObject);
 
   if (stream && typeof stream.getTracks === 'function') {
@@ -1136,8 +1120,6 @@ async function toggleCam() {
       },
       audio: false
     });
-
-    // Attach the stream only after camera permission succeeds.
     CAM = stream;
     video.srcObject = stream;
     video.hidden = false;
@@ -1154,8 +1136,6 @@ async function toggleCam() {
       'x',
       video.videoHeight
     );
-
-    // Start YOLO only after the video is playing.
     if (typeof startObjectDetection === 'function') {
       startObjectDetection();
     }
