@@ -282,7 +282,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:var(--surface2)}
 .detected.on{opacity:1}
 .stage.cam-on .bust,
 .stage.cam-on #arc,
-.stage.cam-on .zone,
 .stage.cam-on .hand,
+.stage.cam-on .arbubble,
 .stage.cam-on .hint3d { display: none; }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
